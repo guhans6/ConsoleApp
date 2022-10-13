@@ -15,13 +15,14 @@ import Users.userMenu;
 
 public class Storage {
 
+    private static Scanner scanner = new Scanner(System.in);
     private static File customers = new File("customers.txt");
     private static File sellers = new File("sellers.txt");
     private static FileReader fileReader;
     private static BufferedReader reader;
     
     //save customer to customers file
-    public static void saveCustomer(Customer customer) {
+    public static boolean saveCustomer(Customer customer) {
         
         if(userExists(customer, customers)){
             try {
@@ -31,15 +32,17 @@ public class Storage {
                 writer.write(customer.getName() + "|" + customer.getUserName() +"|" + customer.getPassword() + "|" + customer.getEmail() + "|" + customer.getAddress() + "|");
                 writer.newLine();
                 writer.close();
+                return true;
             } catch(IOException e) {
 
                 System.out.println("Error can't save user!");
             }
         }
+        return false;
     }
     
     //save seller to seller file
-    public static void saveSeller(Seller seller) {
+    public static boolean saveSeller(Seller seller) {
 
         if(userExists(seller, sellers)) {
             try {
@@ -49,11 +52,13 @@ public class Storage {
                 writer.write(seller.getName() + "|" + seller.getUserName() +"|" + seller.getPassword() +  "|" + seller.getEmail() + "|" + seller.getAddress() + "|");
                 writer.newLine();
                 writer.close();
+                return true;
             } catch(IOException e) {
 
                 System.out.println("Error can't save user!");
             }
         }
+        return false;
     }
 
     //check if user exists by username,email,number
@@ -66,7 +71,8 @@ public class Storage {
             String line = reader.readLine();
             while(line != null) {
 
-                String[] split = line.split("\\|");
+                String[] split = line.split("|");
+                System.out.println(split[1]);
                 if(split[1].equals(user.getUserName())) {
                     System.out.println("Username already exists.");
                     return false;
@@ -87,7 +93,6 @@ public class Storage {
     
     //check seller and password returns boolean
     public static boolean checkUser() {
-        Scanner scanner = new Scanner(System.in);
         userMenu.userType();
         int input = scanner.nextInt();
         System.out.println("Enter username");
@@ -99,7 +104,6 @@ public class Storage {
             if(input == 1) {
                 fileReader = new FileReader(customers);
             } else {
-                System.out.println("See");
                 fileReader = new FileReader(sellers);
             }
             reader = new BufferedReader(fileReader);
@@ -108,6 +112,7 @@ public class Storage {
 
                 String[] split = line.split("\\|");
                 if(split[1].equals(userName)) {
+
                     if(split[2].equals(password)) {
                         reader.close();
                         return true;
@@ -120,8 +125,6 @@ public class Storage {
 
             System.out.println("Error can't find user!");
         }
-        scanner.close();
         return false;
     }
 }
-

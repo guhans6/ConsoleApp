@@ -1,4 +1,6 @@
 package Users;
+import java.util.InputMismatchException;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 import Customer.Customer;
@@ -9,44 +11,38 @@ public class userMenu {
     
     public static void displayMainMenu(){
         Scanner scanner = new Scanner(System.in);
-        System.out.println("1. Login");
-        System.out.println("2. Register");
-        System.out.println("3. Exit");
-        int input = scanner.nextInt(),input2;
+        char input=1,input2;
+        boolean b=true;
+        while(b)
+        {
+            System.out.println("1. Login");
+            System.out.println("2. Register");
+            System.out.println("3. Exit");
+            input = scanner.next().charAt(0); 
 
-        if(input == 1)
-        {
-            if(Storage.checkUser())
-            {
-                System.out.println("Logged in successfully");
-            }
-            else 
-            {
-                System.out.println("Enter correct username or password");
+            switch(input) {
+                case '1':{
+                    if(Storage.checkUser())
+                    {
+                        System.out.println("Logged in successfully");
+                    }
+                    else 
+                    {
+                        System.out.println("Enter correct username or password");
+                    }
+                    break;
+                }
+                case '3':{
+                    System.out.println("Bye");
+                    b = false;
+                    break;
+                }
+                    
+                default: {
+                    System.out.println("Enter correct option!"); 
+                }
             }
         }
-        else if(input == 2)
-        {
-            userType();
-            input2 = scanner.nextInt();
-            if(input2 == 1){
-                new Customer().customerRegistration();
-            }
-            else {
-                new Seller().sellerRegistration();
-            }
-        }
-        else if(input == 3)
-        {
-            System.exit(0);
-        }
-        else
-        {
-            System.out.println("Invalid input");
-            displayMainMenu();
-
-        }
-
         scanner.close();
     }
     
@@ -92,9 +88,47 @@ public class userMenu {
         System.out.println("Select user type.");
         System.out.println("1. Customer");
         System.out.println("2. Seller");
+        System.out.println("3. Exit this menu");
     }
 
     
-
+    // try { 
+    //     if(input == '1')
+    //     {
+    //         if(Storage.checkUser())
+    //         {
+    //             System.out.println("Logged in successfully");
+    //         }
+    //         else 
+    //         {
+    //             System.out.println("Enter correct username or password");
+    //         }
+    //     }
+    //     else if(input == '2')
+    //     {
+    //         userType();
+    //         input2 = scanner.next().charAt(0);
+    //         if(input2 == 1){
+    //             new Customer().customerRegistration();
+    //         }
+    //         else {
+    //             new Seller().sellerRegistration();
+    //         }
+    //     }
+    //     else if(input == '3')
+    //     { 
+    //         b=false;
+    //         scanner.close();
+    //         //break;
+    //     }
+    //     else
+    //     {
+    //         System.out.println("Enter from given options");
+    //     }
+    // } 
+    // catch(Exception e) {
+    //         System.out.println("Enter from given options");
+    //     }
+// }
 
 }

@@ -79,8 +79,9 @@ public class Seller implements User{
         System.out.println("Enter your office address:");
         setAddress(input.nextLine());
         //save seller to seller file
-        Storage.saveSeller(this);
-        System.out.println("You have registered successfully!");
+        if(Storage.saveSeller(this)) {
+            System.out.println("You have registered successfully!");
+        }
     }
 
 
