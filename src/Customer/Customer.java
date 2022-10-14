@@ -1,11 +1,10 @@
 package Customer;
 
-import java.util.ArrayList;
+
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
 import Storage.Storage;
-
 import Users.User;
 
 public class Customer implements User {
@@ -16,7 +15,6 @@ public class Customer implements User {
     private String customerEmail;
     private String customerPassword;
     private String address;
-    private String number;
 
     @Override
     public void setName(String customerName) {
@@ -89,8 +87,9 @@ public class Customer implements User {
             System.out.println("Enter Correct credentials!");
         }
         //store in file
-        Storage.saveCustomer(customer);
-        System.out.println("You have been registered!");
+        if(Storage.saveCustomer(customer)) {
+            System.out.println("You have been registered!");
+        }
         scanner.close();
     }
 
