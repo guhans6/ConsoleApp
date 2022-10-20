@@ -24,6 +24,12 @@ public class Mobile implements Product{
     private String mobileWarranty;
     private String mobileFeatures;
 
+
+    //constructor that set id for each product auto increment
+    public Mobile() {
+        this.productID = id;
+    }
+
     //getters and setters
 
     @Override
@@ -48,7 +54,7 @@ public class Mobile implements Product{
 
     @Override
     public void setProductID(int productID) {
-        this.productID = productID;
+        // this.productID = productID;
     }
 
     @Override
@@ -84,6 +90,17 @@ public class Mobile implements Product{
     @Override
     public String getProductCategory() {
         return productCategory;
+    }
+
+    @Override
+    public void setProductBrand(String productBrand) {
+        this.mobileBrand = productBrand;
+        
+    }
+
+    @Override
+    public String getProductBrand() {
+        return mobileBrand;
     }
 
     @Override
@@ -210,7 +227,8 @@ public class Mobile implements Product{
                 + ", mobileBattery=" + mobileBattery + ", mobileCamera=" + mobileCamera + ", mobileDisplay="
                 + mobileDisplay + ", mobileProcessor=" + mobileProcessor + ", mobileOs=" + mobileOs + ", mobileNetwork="
                 + ", mobileWarranty=" + mobileWarranty + ", mobileFeatures=" + mobileFeatures + ", mobileOtherDetails=" + "]";
-    }
+            }
+
 
     
 

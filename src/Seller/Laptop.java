@@ -1,4 +1,5 @@
 package Seller;
+
 public class Laptop implements Product {
 
     //varibles
@@ -21,8 +22,16 @@ public class Laptop implements Product {
     private String laptopOs;
     private String laptopWarranty;
     private String laptopFeatures;
+    private String graphicsCard;
+    private static int id = 0;
 
-    //getters and setters
+    //constructor that set id for each product auto increment
+    public Laptop() {
+        ++id;
+        this.productID = id;
+    }
+
+
 
     @Override
     public void setPrice(double price) {
@@ -46,7 +55,7 @@ public class Laptop implements Product {
 
     @Override
     public void setProductID(int productID) {
-        this.productID = productID;
+        // this.productID = productID;
     }
 
     @Override
@@ -62,6 +71,16 @@ public class Laptop implements Product {
     @Override
     public String getProductName() {
         return productName;
+    }
+
+    @Override
+    public void setProductBrand(String productBrand) {
+        this.laptopBrand = productBrand;
+    }
+
+    @Override
+    public String getProductBrand() {
+        return laptopBrand;
     }
 
     @Override
@@ -193,6 +212,27 @@ public class Laptop implements Product {
     public void setLaptopFeatures(String laptopFeatures) {
         this.laptopFeatures = laptopFeatures;
     }
+
+    public void setLaptopGraphicsCard(String graphicsCard) {
+        this.graphicsCard = graphicsCard;
+    }
+
+    public String getLaptopGraphicsCard() {
+        return graphicsCard;
+    }
+
+    @Override
+    public String toString() {
+        return "Laptop [price=" + price + ", quantity=" + quantity + ", productID=" + productID + ", productName="
+                + productName + ", productDescription=" + productDescription + ", productCategory=" + productCategory
+                + ", productDiscount=" + productDiscount + ", productDiscountedPrice=" + productDiscountedPrice
+                + ", productRating=" + productRating + ", laptopBrand=" + laptopBrand + ", laptopColor=" + laptopColor
+                + ", laptopRam=" + laptopRam + ", laptopRom=" + laptopRom + ", laptopBattery=" + laptopBattery
+                + ", laptopDisplay=" + laptopDisplay + ", laptopProcessor=" + laptopProcessor + ", laptopOs=" + laptopOs
+                + ", laptopWarranty=" + laptopWarranty + ", laptopFeatures=" + laptopFeatures + ", graphicsCard="
+                + graphicsCard + "]";
+    }
+
 
 
 }

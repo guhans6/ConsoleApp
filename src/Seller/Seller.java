@@ -1,5 +1,4 @@
 package Seller;
-import java.util.ArrayList;
 import java.util.Scanner;
 
 import Storage.Storage;
@@ -13,7 +12,7 @@ public class Seller implements User{
     private String sellerEmail;
     private String sellerPassword;
     private String sellerOfficeAddress;
-    private ArrayList<Product> products;
+    // private ArrayList<Product> products;
 
     @Override
     public void setName(String sellerName) {
