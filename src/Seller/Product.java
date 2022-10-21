@@ -2,7 +2,6 @@ package Seller;
 
 public interface Product {
     
-    int id = 0;
     //Interface for product that contains all methods for online products
     public void setPrice(double price);
     public double getPrice();
@@ -16,7 +15,6 @@ public interface Product {
     public String getProductBrand();
     public void setProductDescription(String productDescription);
     public String getProductDescription();
-    public void setProductCategory(String productCategory);
     public String getProductCategory();
     public void setProductDiscount(double productDiscount);
     public double getProductDiscount();

@@ -1,1 +1,0 @@
-naveen|Laptop [price=45000.0, quantity=5, productID=1, productName=Xp, productDescription=null, productCategory=null, productDiscount=0.0, productDiscountedPrice=0.0, productRating=0.0, laptopBrand=Dell, laptopColor=green, laptopRam=6, laptopRom=8, laptopBattery=8, laptopDisplay=15, laptopProcessor=i7, laptopOs=mac, laptopWarranty=1, laptopFeatures=null, graphicsCard=nukk]

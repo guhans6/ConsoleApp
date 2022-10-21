@@ -1,12 +1,5 @@
-
-import java.io.IOException;
 import java.util.Scanner;
 
-import Customer.Customer;
-import Seller.Laptop;
-import Seller.Product;
-import Seller.Seller;
-import Storage.Storage;
 import Users.userMenu;
 
 public class Main {

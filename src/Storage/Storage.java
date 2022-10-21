@@ -23,6 +23,7 @@ public class Storage {
     private static File products = new File("products.txt");
     private static FileReader fileReader;
     private static BufferedReader reader;
+    private static BufferedWriter writer;
     
     //save customer to customers file
     public static boolean saveCustomer(Customer customer) {
@@ -152,18 +153,8 @@ public class Storage {
     //add products to products file with usename as identification
     public static boolean addProduct(String username, Product product) {
         try {
-            fileReader = new FileReader(products);
-            reader = new BufferedReader(fileReader);
-            String line = reader.readLine();
-            while(line != null) {
-
-                String[] split = line.split("\\|");
-                if(split[0].equals(username)) {
-                    id = Integer.parseInt(split[1]);
-                }
-                line = reader.readLine();
-            }
-            reader.close();
+            int id = getAvailavleID();
+            product.setProductID(++id);
             FileWriter fileWriter = new FileWriter(products, true);
             BufferedWriter writer = new BufferedWriter(fileWriter);
             writer.write(username + "|" + product.toString());
@@ -177,44 +168,108 @@ public class Storage {
         return false;
     }
 
-    //add products to seller file to specific seller by username
-    // public static boolean addProduct(String username, Product product) {
-    //     product.setProductID(++id);
-    //     String productString = product.toString();
-    //     try {
-    //         // creating temp file and copies all data from seller file to temp file except the product
-    //         fileReader = new FileReader(sellers);
-    //         reader = new BufferedReader(fileReader);
-    //         File temp = new File("temp.txt");
-    //         temp.createNewFile();
-    //         FileWriter fileWriter = new FileWriter(temp);
-    //         BufferedWriter writer = new BufferedWriter(fileWriter);
-    //         String line = reader.readLine();
-    //         while(line != null) {
-    //             String[] split = line.split("\\|");
-    //             if(split[1].equals(username)) {
-    //                 if(split[5].equals("null")){
-    //                     split[5] = productString;
-    //                 }
-    //                 else {
-    //                     split[5] += "," + productString;
-    //                 }
-    //                 line = split[0] + "|" + split[1] + "|" + split[2] + "|" + split[3] + "|" + split[4] + "|" + split[5] + "|";
-    //             }
-    //             writer.write(line);
-    //             writer.newLine();
-    //             line = reader.readLine();
-    //         }
-    //         writer.close();
-    //         reader.close();
-    //         fileReader.close();
-    //         fileWriter.close();
-    //         sellers.delete();
-    //         temp.renameTo(sellers);
-    //     } catch(IOException e) {
+    private static int getAvailavleID() {
+        //read products file and get the last id and add 1 to it
+        try {
+            reader = new BufferedReader(new FileReader(products));
+            String line = reader.readLine();
+            while(line != null) {
 
-    //         System.out.println("Error can't find user!");
-    //     }
-    //     return false;
-    // }
+                String[] split = line.split("\\|");
+                id = Integer.parseInt(split[1]);
+                line = reader.readLine();
+            }
+            reader.close();
+        } catch(IOException e) {
+
+            System.out.println("Error can't find user!");
+        }
+        System.out.println(id);
+        return id;
+    }
+
+    public static void getProducts(String username) {
+        try {
+            reader = new BufferedReader(new FileReader("products.txt"));
+            String line = reader.readLine();
+            while(line != null) {
+
+                String[] split = line.split("\\|");
+                if(split[0].equals(username)) {
+                    displayProduct(split);
+                }
+                line = reader.readLine();
+            }
+            reader.close();
+        } catch(IOException e) {
+
+            System.out.println("Error can't read!");
+        }
+    }
+
+    private static void displayProduct(String[] split) {
+        //this method displays the array with beautiful alignment like a table
+        System.out.println("====================================================================================================");
+        System.out.println("Product Id : " + split[1] + "\tProduct Name : " + split[2] + "\tProduct Price : " + split[3]);
+        System.out.println("Description : " + split[5]);
+        System.out.println("Discount : " + split[6] + "\tRating : " + split[7] + "\tAvailable : " + split[4]);
+        System.out.println("====================================================================================================");
+    }
+
+    public static void deatileProductView(short type) {
+        try {
+            reader = new BufferedReader(new FileReader("products.txt"));
+            String line = reader.readLine();
+            String productType;
+            if(type == 1) { productType = "Laptop"; }
+            else if(type == 2) { productType = "Mobile"; }
+            else {
+                System.out.println("Enter Correct Type!");
+                return;
+            }
+            while(line != null) {
+
+                String[] split = line.split("\\|");
+                if(split[0].equals(productType)) {
+                    displayProduct(split);
+                }
+                line = reader.readLine();
+            }
+            reader.close();
+        } catch(IOException e) {
+
+            System.out.println("Error can't find products!");
+        }
+    }
+
+    public static void deleteProduct(String username, int id) {
+        //this method deletes the product from the file using temp file
+        try {
+            reader = new BufferedReader(new FileReader(products));
+            File tempFile = new File("temp.txt");
+            writer = new BufferedWriter(new FileWriter(tempFile));
+            tempFile.createNewFile();
+            String line = reader.readLine();
+            while(line != null) {
+
+                String[] split = line.split("\\|");
+                if(split[0].equals(username) && Integer.parseInt(split[1]) == id) {
+                    line = reader.readLine();
+                    continue;
+                }
+                writer.write(line);
+                writer.newLine();
+                line = reader.readLine();
+            }
+            reader.close();
+            writer.close();
+            products.delete();
+            tempFile.renameTo(products);
+            System.out.println("Product deleted successfully.");
+        } catch(IOException e) {
+
+            System.out.println("Error can't find products!");
+        }
+    }
+
 }

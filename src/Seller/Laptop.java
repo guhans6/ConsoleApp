@@ -1,5 +1,6 @@
 package Seller;
 
+
 public class Laptop implements Product {
 
     //varibles
@@ -8,7 +9,7 @@ public class Laptop implements Product {
     private int productID;
     private String productName;
     private String productDescription;
-    private String productCategory;
+    final private String productCategory = "Laptop";
     private double productDiscount;
     private double productDiscountedPrice;
     private double productRating;
@@ -23,15 +24,6 @@ public class Laptop implements Product {
     private String laptopWarranty;
     private String laptopFeatures;
     private String graphicsCard;
-    private static int id = 0;
-
-    //constructor that set id for each product auto increment
-    public Laptop() {
-        ++id;
-        this.productID = id;
-    }
-
-
 
     @Override
     public void setPrice(double price) {
@@ -55,7 +47,7 @@ public class Laptop implements Product {
 
     @Override
     public void setProductID(int productID) {
-        // this.productID = productID;
+        this.productID = productID;
     }
 
     @Override
@@ -91,11 +83,6 @@ public class Laptop implements Product {
     @Override
     public String getProductDescription() {
         return productDescription;
-    }
-
-    @Override
-    public void setProductCategory(String productCategory) {
-        this.productCategory = productCategory;
     }
 
     @Override
@@ -223,16 +210,9 @@ public class Laptop implements Product {
 
     @Override
     public String toString() {
-        return "Laptop [price=" + price + ", quantity=" + quantity + ", productID=" + productID + ", productName="
-                + productName + ", productDescription=" + productDescription + ", productCategory=" + productCategory
-                + ", productDiscount=" + productDiscount + ", productDiscountedPrice=" + productDiscountedPrice
-                + ", productRating=" + productRating + ", laptopBrand=" + laptopBrand + ", laptopColor=" + laptopColor
-                + ", laptopRam=" + laptopRam + ", laptopRom=" + laptopRom + ", laptopBattery=" + laptopBattery
-                + ", laptopDisplay=" + laptopDisplay + ", laptopProcessor=" + laptopProcessor + ", laptopOs=" + laptopOs
-                + ", laptopWarranty=" + laptopWarranty + ", laptopFeatures=" + laptopFeatures + ", graphicsCard="
-                + graphicsCard + "]";
+        return productID + "|" + productName + "|" + price + "|" + quantity + "|" + productDescription + "|" + productCategory
+                + "|" + productDiscount + "|" + productDiscountedPrice + "|" + productRating + "|" + laptopBrand + "|"
+                + laptopColor + "|" + laptopRam + "|" + laptopRom + "|" + laptopBattery + "|" + laptopDisplay + "|"
+                + laptopProcessor + "|" + laptopOs + "|" + laptopWarranty + "|" + graphicsCard;
     }
-
-
-
 }
