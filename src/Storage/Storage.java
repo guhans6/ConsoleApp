@@ -21,6 +21,7 @@ public class Storage {
     private static File sellers = new File("sellers.txt");
     private static File admins = new File("admins.txt");
     private static File products = new File("products.txt");
+    private static File orders = new File("orders.txt");
     private static FileReader fileReader;
     private static BufferedReader reader;
     private static BufferedWriter writer;
@@ -33,7 +34,7 @@ public class Storage {
 
                 FileWriter fileWriter = new FileWriter(customers, true);
                 BufferedWriter writer = new BufferedWriter(fileWriter);
-                writer.write(customer.getName() + "|" + customer.getUserName() +"|" + customer.getPassword() + "|" + customer.getEmail() + "|" + customer.getAddress() + "|");
+                writer.write(customer.getName() + "|" + customer.getUserName() +"|" + customer.getPassword() + "|" + customer.getEmail() + "|" + customer.getAddress() + "|" + "null|");
                 writer.newLine();
                 writer.close();
                 return true;
@@ -64,27 +65,6 @@ public class Storage {
         }
         return false;
     }
-
-    //save admin
-    public static boolean saveAdmin(User admin) {
-
-        if(userExists(admin, admins)) {
-            try {
-
-                FileWriter fileWriter = new FileWriter(admins, true);
-                BufferedWriter writer = new BufferedWriter(fileWriter);
-                writer.write(admin.getName() + "|" + admin.getUserName() +"|" + admin.getPassword() +  "|" + admin.getEmail() + "|" + admin.getAddress() );
-                writer.newLine();
-                writer.close();
-                return true;
-            } catch(IOException e) {
-
-                System.out.println("Error can't save user!");
-            }
-        }
-        return false;
-    }
-
     //check if user exists by username,email,number
     public static boolean userExists(User user,File file) {
 
@@ -116,29 +96,30 @@ public class Storage {
 
     public static short checkUser(String username, String password, short userType) {
         try {
-            
             if(userType == 1) {
-                // System.out.println("Customer Portal.");
                 fileReader = new FileReader(customers);
             }
             else if(userType == 2) {
                 // System.out.println("Seller Portal.");
                 fileReader = new FileReader(sellers);
             }
-            else if(userType == 3) {
-                // System.out.println("Admin Portal");
-            }
             else {
                 return 0;
             }
-    
             reader = new BufferedReader(fileReader);
             String line = reader.readLine();
             while(line != null) {
 
                 String[] split = line.split("\\|");
-                if(split[1].equals(username) && split[2].equals(password)) {
-                    return userType;
+                if(split[1].equals(username)) {
+                    if(split[2].equals(password)) {
+                        return userType;
+                    }
+                    else {
+                        System.out.println("Wrong password.");
+                    }
+                    reader.close();
+                    break;
                 }
                 line = reader.readLine();
             }
@@ -184,7 +165,6 @@ public class Storage {
 
             System.out.println("Error can't find user!");
         }
-        System.out.println(id);
         return id;
     }
 
@@ -212,7 +192,7 @@ public class Storage {
         System.out.println("====================================================================================================");
         System.out.println("Product Id : " + split[1] + "\tProduct Name : " + split[2] + "\tProduct Price : " + split[3]);
         System.out.println("Description : " + split[5]);
-        System.out.println("Discount : " + split[6] + "\tRating : " + split[7] + "\tAvailable : " + split[4]);
+        System.out.println("Discount : " + split[7] + "\tRating : " + split[7] + "\tAvailable : " + split[4]);
         System.out.println("====================================================================================================");
     }
 
@@ -230,7 +210,7 @@ public class Storage {
             while(line != null) {
 
                 String[] split = line.split("\\|");
-                if(split[0].equals(productType)) {
+                if(split[6].equals(productType)) {
                     displayProduct(split);
                 }
                 line = reader.readLine();
@@ -272,4 +252,234 @@ public class Storage {
         }
     }
 
+    //this method gets all the products in the cart in the customer file of the username and displays total price
+
+    public static void viewOrders(String username) {
+        try {
+            reader = new BufferedReader(new FileReader(orders));
+            String line = reader.readLine();
+            while(line != null) {
+
+                String[] split = line.split("\\|");
+                if(split[8].equals(username)) {
+                    displayProduct(split);
+                }
+                line = reader.readLine();
+            }
+            reader.close();
+        } catch(IOException e) {
+
+            System.out.println("Error can't find products!");
+        }
+    }
+
+    public static void addToCart(String username, int id) {
+        if(checkStock(id)) {
+            try {
+                reader = new BufferedReader(new FileReader(customers));
+                File tempFile = new File("temp.txt");
+                writer = new BufferedWriter(new FileWriter(tempFile));
+                tempFile.createNewFile();
+                String line = reader.readLine();
+                String split[];
+                while(line !=null)
+                {
+                    split = line.split("\\|");
+                    if(split[1].equals(username)) {
+                        if(split[5].equals("null")) {
+                            System.out.println("Cart is empty.");
+                            line = split[0] + "|" + split[1] + "|" + split[2] + "|" + split[3] + "|" + split[4] + "|" + id + "|";
+                        }
+                        else {
+                            line = split[0] + "|" + split[1] + "|" + split[2] + "|" + split[3] + "|" + split[4] + "|" + split[5] + "," + id + "|";
+                        }
+                        System.out.println("Product added to cart successfully.");
+                    }
+                    writer.write(line);
+                    writer.newLine();
+                    line = reader.readLine();
+                }
+                reader.close(); 
+                writer.close();
+                customers.delete(); 
+                tempFile.renameTo(customers);
+            } catch(IOException e) {
+                System.out.println("Error Can't add to cart");
+            }
+        }
+    }
+
+    //calculate total price of the products in the cart by username and display it if user wants to buy add it to orders file
+    public static void buyProduct(String username) {
+        try {
+            reader = new BufferedReader(new FileReader(customers));
+            String line = reader.readLine();
+            String[] split;
+            while(line != null) {
+                split = line.split("\\|");
+                if(split[1].equals(username)) {
+                    if(split[5].equals("null")) {
+                        System.out.println("Cart is empty.");
+                        return;
+                    }
+                    else {
+                        String[] ids = split[5].split(",");
+                        int totalPrice = 0;
+                        for(int i = 0; i < ids.length; i++) {
+                            totalPrice += getProductPrice(Integer.parseInt(ids[i]));
+                        }
+                        System.out.println("Total Price : " + totalPrice);
+                        System.out.println("Do you want to buy? (y/n)");
+                        char choice = scanner.next().charAt(0);
+                        if(choice == 'y') {
+                            for(int i = 0; i < ids.length; i++) {
+                                addOrder(username, Integer.parseInt(ids[i]));
+                                removeStock(Integer.parseInt(ids[i]));
+                            }
+                            System.out.println("Order placed successfully.");
+                            int days = (int)(Math.random() * 6) + 1;
+                            System.out.println("Your order will be delivered in " + days + " days.");
+                            clearOrders(username);
+                        }
+                        else {
+                            return;
+                        }
+                    }
+                }
+                line = reader.readLine();
+            }
+            reader.close();
+        } catch(IOException e) {
+            System.out.println("Error can't find products!");
+        }
+    }
+
+    private static void removeStock(int parseInt) {
+        //reduce stock by 1
+        try {
+            reader = new BufferedReader(new FileReader(products));
+            File tempFile = new File("temp.txt");
+            writer = new BufferedWriter(new FileWriter(tempFile));
+            tempFile.createNewFile();
+            String line = reader.readLine();
+            String[] split;
+            while(line != null) {
+                split = line.split("\\|");
+                if(Integer.parseInt(split[1]) == parseInt) {
+                    int stock = Integer.parseInt(split[4]);
+                    stock--;
+                    line = split[0] + "|" + split[1] + "|" + split[2] + "|" + split[3] + "|" + stock + "|" + split[5] + "|" + split[6] + "|" + split[7] + "|" + split[8] + "|";
+                }
+                writer.write(line);
+                writer.newLine();
+                line = reader.readLine();
+            }
+            reader.close();
+            writer.close();
+            products.delete();
+            tempFile.renameTo(products);
+        } catch(IOException e) {
+            System.out.println("Error can't find products!");
+        }
+    }
+
+    private static void clearOrders(String username) {
+        try {
+            reader = new BufferedReader(new FileReader(customers));
+            File tempFile = new File("temp.txt");
+            writer = new BufferedWriter(new FileWriter(tempFile));
+            tempFile.createNewFile();
+            String line = reader.readLine();
+            String split[];
+            while(line !=null)
+            {
+                split = line.split("\\|");
+                if(split[1].equals(username)) {
+                    line = split[0] + "|" + split[1] + "|" + split[2] + "|" + split[3] + "|" + split[4] + "|" + "null" + "|";
+                }
+                writer.write(line);
+                writer.newLine();
+                line = reader.readLine();
+            }
+            reader.close(); 
+            writer.close();
+            customers.delete(); 
+            tempFile.renameTo(customers);
+        } catch(IOException e) {
+            System.out.println("Error Can't add to cart");
+        }
+    }
+
+    //this method add the order to orders file
+    private static void addOrder(String username, int parseInt) {
+        try {
+            reader = new BufferedReader(new FileReader(products));
+            String line = reader.readLine();
+            String[] split;
+            while(line != null) {
+                split = line.split("\\|");
+                if(Integer.parseInt(split[1]) == parseInt) {
+                    writer = new BufferedWriter(new FileWriter(orders, true));
+                    writer.write(split[0] + "|" + split[1] + "|" + split[2] + "|" + split[3] + "|" + split[4] + "|" + split[5] + "|" + split[6] + "|" + split[7] + "|" + username + "|");
+                    writer.newLine();
+                    writer.close();
+                    break;
+                }
+                line = reader.readLine();
+            }
+            reader.close();
+        } catch(IOException e) {
+            System.out.println("Error can't find products!");
+        }
+    }
+
+    private static double getProductPrice(int id) {
+        try {
+            reader = new BufferedReader(new FileReader(products));
+            String line = reader.readLine();
+            while(line != null) {
+
+                String[] split = line.split("\\|");
+                if(Integer.parseInt(split[1]) == id) {
+                    System.out.println("Product Id : " + split[1] + " Product Name : " + split[2] + " Product Price : " + split[3]);
+                    System.out.println("price : " + split[3]);
+                    return Double.parseDouble(split[3]);
+                }
+                line = reader.readLine();
+            }
+            reader.close();
+        } catch(IOException e) {
+
+            System.out.println("Error can't find products!");
+        }
+        return 0;
+    }
+
+    //this method adds product id to the end of the customer in customer file
+    private static boolean checkStock(int id) { 
+        try {
+            reader = new BufferedReader(new FileReader(products));
+            String line = reader.readLine();
+            while(line != null) {
+
+                String[] split = line.split("\\|");
+                if(Integer.parseInt(split[1]) == id) {
+                    if(Integer.parseInt(split[4]) > 0) {
+                        reader.close();
+                        return true;
+                    }
+                    else {
+                        System.out.println("Product is out of stock.");
+                        return false;
+                    }
+                }
+                line = reader.readLine();
+            }
+            reader.close();
+        } catch(IOException e) {
+
+            System.out.println("Error can't find products!");
+        }
+        return false;
+    }
 }

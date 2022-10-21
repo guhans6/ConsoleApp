@@ -26,7 +26,8 @@ public class userMenu {
                 switch(input) {
                     case 1:
                         short userType = userType();
-                        if(userType > 3) { 
+                        if(userType == 3) { break ; }
+                        if(userType > 3) {
                             System.out.println("Invalid input");
                             break;
                         }
@@ -38,7 +39,7 @@ public class userMenu {
                         int checker = Storage.checkUser(username, password, userType);
                         if(checker == 1) {
                             System.out.println("Login successful!");
-                            customerMenu();
+                            customerMenu(username);
                         }
                         else if(checker == 2) {
                             System.out.println("Seller Login Successfull");
@@ -66,38 +67,46 @@ public class userMenu {
         scanner.close();
     }
 
-    private static void customerMenu(){
-        System.out.println("\n1. View Products");
-        System.out.println("2. View Cart");
-        System.out.println("3. View Orders");
-        System.out.println("4. Logout");
-        System.out.println("5. Exit");
-        try {
-            choice = scanner.nextShort();
-            switch(choice) {
-                case 1:
-                    System.out.println("What do you want to see?\n1. Laptop\n2.Mobile");            
-                    short type = scanner.nextShort();
-                    Storage.deatileProductView(type);
-                    break;
-                case 2:
-                    System.out.println("View Cart");
-                    break;
-                case 3:
-                    System.out.println("View Orders");
-                    break;
-                case 4:
-                    System.out.println("Logout");
-                    break;
-                case 5:
-                    System.out.println("Exit");
-                    break;
-                default:
-                    System.out.println("Enter from given options!");
+    private static void customerMenu(String username){
+        short productId;
+        while(true) {
+            System.out.println("\n1. View Products");
+            System.out.println("2. Add Cart");
+            System.out.println("3. Buy Products in the cart");
+            System.out.println("4. View Orders");
+            System.out.println("5. Logout");
+            System.out.println("6. Exit");
+            try {
+                choice = scanner.nextShort();
+                switch(choice) {
+                    case 1:
+                        System.out.println("What do you want to see?\n1. Laptop\n2. Mobile");            
+                        short type = scanner.nextShort();
+                        Storage.deatileProductView(type);
+                        break;
+                    case 2:
+                        System.out.println("Enter product id to add in cart: ");
+                        productId = scanner.nextShort();
+                        Storage.addToCart(username, productId);
+                        break;
+                    case 3:
+                        Storage.buyProduct(username);
+                        break;
+                    case 4:
+                        Storage.viewOrders(username);
+                        break;
+                    case 5:
+                        break;
+                    case 6:
+                        System.out.println("Exit");
+                        break;
+                    default:
+                        System.out.println("Enter from given options!");
+                }
+            } catch(InputMismatchException e) {
+                System.out.println("Enter from given options!");
+                scanner.nextLine();
             }
-        } catch(InputMismatchException e) {
-            System.out.println("Enter from given options!");
-            scanner.nextLine();
         }
     }
     
@@ -211,6 +220,8 @@ public class userMenu {
             laptop.setPrice(scanner.nextFloat());
             System.out.println("Enter Laptop Quantity: ");
             laptop.setQuantity(scanner.nextInt());
+            System.out.println("Enter discount percentage");
+            laptop.setProductDiscount(scanner.nextFloat());
             scanner.nextLine();
             System.out.println("Enter Laptop RAM: ");
             laptop.setLaptopRam(scanner.nextLine());

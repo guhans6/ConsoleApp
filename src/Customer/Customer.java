@@ -90,7 +90,6 @@ public class Customer implements User {
         if(Storage.saveCustomer(customer)) {
             System.out.println("You have been registered!");
         }
-        scanner.close();
     }
 
     
