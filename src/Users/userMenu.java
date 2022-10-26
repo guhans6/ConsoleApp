@@ -26,8 +26,8 @@ public class userMenu {
                 switch(input) {
                     case 1:
                         short userType = userType();
-                        if(userType == 3) { break ; }
-                        if(userType > 3) {
+                        if(userType == 4) { break ; }
+                        if(userType > 4) {
                             System.out.println("Invalid input");
                             break;
                         }
@@ -44,6 +44,10 @@ public class userMenu {
                         else if(checker == 2) {
                             System.out.println("Seller Login Successfull");
                             sellerMenu(username);
+                        }
+                        else if(checker == 3) {
+                            System.out.println("Admin Login Successfull");
+                            adminMenu(username);
                         }
                         else if(checker == -1){
                             System.out.println("Login failed!");
@@ -69,6 +73,7 @@ public class userMenu {
 
     private static void customerMenu(String username){
         short productId;
+        System.out.println("Welcome " + username);
         while(true) {
             System.out.println("\n1. View Products");
             System.out.println("2. Add Cart");
@@ -90,7 +95,7 @@ public class userMenu {
                         Storage.addToCart(username, productId);
                         break;
                     case 3:
-                        Storage.buyProduct(username);
+                        Storage.getCart(username);
                         break;
                     case 4:
                         Storage.viewOrders(username);
@@ -119,30 +124,80 @@ public class userMenu {
             System.out.println("4. Delete Product");
             System.out.println("5. Logout");
             System.out.println("6. Exit");
-            choice = scanner.nextShort();
-            switch(choice){
-                case 1:
-                    addProduct(username);
-                    break;
-                case 2:
-                    Storage.getProducts(username);
-                    break;
-                case 3:
-                    viewOrders(username);
-                    break;
-                case 4:
-                    System.out.println("Enter product ID to delete: ");
-                    int id = scanner.nextInt();
-                    Storage.deleteProduct(username, id);
-                    break;
-                case 5:
-                    System.out.println("Logged out successfully!");
-                    return;
-                case 6:
-                    System.out.println("Bye!");
-                    System.exit(0);
-                default:
-                    System.out.println("Enter from given options!");
+            try {
+                choice = scanner.nextShort();
+                switch(choice){
+                    case 1:
+                        addProduct(username);
+                        break;
+                    case 2:
+                        Storage.getProducts(username);
+                        break;
+                    case 3:
+                        viewOrders(username);
+                        break;
+                    case 4:
+                        System.out.println("Enter product ID to delete: ");
+                        int id = scanner.nextInt();
+                        Storage.deleteProduct(username, id);
+                        break;
+                    case 5:
+                        System.out.println("Logged out successfully!");
+                        return;
+                    case 6:
+                        System.out.println("Bye!");
+                        System.exit(0);
+                    default:
+                        System.out.println("Enter from given options!");
+                }
+            } catch(InputMismatchException e) {
+                System.out.println("Enter from given options!");
+                scanner.nextLine();
+            }
+        }
+    }
+
+    public static void adminMenu(String username) {
+        System.out.println("Welcome "+username);
+        while(true){
+            System.out.println("\n1. View Products");
+            System.out.println("2. Delete Product");
+            System.out.println("3. Delete User");
+            System.out.println("4. Logout");
+            try {
+                choice = scanner.nextShort();
+                switch(choice){
+                    case 1:
+                        Storage.deatileProductView(1);
+                        Storage.deatileProductView(2);
+                        break;
+                    case 2:
+                        System.out.println("Enter product ID to delete: ");
+                        int id = scanner.nextInt();
+                        scanner.nextLine();
+                        System.out.println("Enter seller username: ");
+                        String sellerUsername = scanner.nextLine();
+                        Storage.deleteProduct(sellerUsername, id);
+                        break;
+                    case 3:
+                        System.out.println("Enter username to delete: ");
+                        String usernameToDelete = scanner.nextLine();
+                        System.out.println("Enter user type: ");
+                        short userType = scanner.nextShort();
+                        Storage.deleteUser(usernameToDelete, userType);
+                        break;
+                    case 4:
+                        System.out.println("Logged out successfully!");
+                        return;
+                    case 5:
+                        System.out.println("Bye!");
+                        System.exit(0);
+                    default:
+                        System.out.println("Enter from given options!");
+                }
+            } catch(InputMismatchException e) {
+                System.out.println("Enter from given options!");
+                scanner.nextLine();
             }
         }
     }
@@ -166,7 +221,8 @@ public class userMenu {
         System.out.println("\nSelect user type.");
         System.out.println("1. Customer");
         System.out.println("2. Seller");
-        System.out.println("3. Exit this menu");
+        System.out.println("3. Admin");
+        System.out.println("4. Exit this menu");
         try {
             return scanner.nextShort();
         }
@@ -174,7 +230,7 @@ public class userMenu {
             System.out.println("Enter corrct option!");
             scanner.nextLine();
         }
-        return 3;
+        return 4;
     }
 
     private static boolean registerUser() {
@@ -196,22 +252,27 @@ public class userMenu {
 
     public static void addProduct(String username) {
         System.out.println("Enter type of product: \n1. Laptop \n2. Mobile");
-        short type = scanner.nextShort();
-        scanner.nextLine();
-        if(type == 1) {
-            addLaptop(username);
-        }
-        else if(type == 2) {
-            addMobile(username);
-        }
-        else {
+        try {
+            short type = scanner.nextShort();
+            scanner.nextLine();
+            if(type == 1) {
+                addLaptop(username);
+            }
+            else if(type == 2) {
+                addMobile(username);
+            }
+            else {
+                System.out.println("Enter from given options!");
+            }
+        } catch(InputMismatchException e) {
             System.out.println("Enter from given options!");
+            scanner.nextLine();
         }
     }
 
     private static void addLaptop(String username) {
         Laptop laptop = new Laptop();
-            try {
+        try {
             System.out.println("Enter Laptop Brand: ");
             laptop.setProductBrand(scanner.nextLine());
             System.out.println("Enter Laptop Name: ");
@@ -233,7 +294,7 @@ public class userMenu {
             laptop.setLaptopDisplay(scanner.nextLine());
             System.out.println("Enter Laptop Operating System: ");
             laptop.setLaptopOs(scanner.nextLine());
-            System.out.println("Enter Laptop Graphics Card(If not enter null): ");
+            System.out.println("Enter Laptop Graphics Card(If not enter None): ");
             laptop.setLaptopGraphicsCard(scanner.nextLine());
             System.out.println("Enter Laptop Battery: ");
             laptop.setLaptopBattery(scanner.nextLine());
@@ -258,7 +319,8 @@ public class userMenu {
 
     //add mobile
     private static void addMobile(String username) {
-        Mobile mobile = new Mobile();
+    Mobile mobile = new Mobile();
+    try {
         System.out.println("Enter Mobile Brand: ");
         mobile.setProductBrand(scanner.nextLine());
         System.out.println("Enter Mobile Name: ");
@@ -267,6 +329,8 @@ public class userMenu {
         mobile.setPrice(scanner.nextFloat());
         System.out.println("Enter Mobile Quantity: ");
         mobile.setQuantity(scanner.nextInt());
+        System.out.println("Enter discount percentage");
+        mobile.setProductDiscount(scanner.nextFloat());
         scanner.nextLine();
         System.out.println("Enter Mobile RAM: ");
         mobile.setMobileRam(scanner.nextLine());
@@ -290,6 +354,10 @@ public class userMenu {
         else{
             System.out.println("Mobile not added!");
         }   
+    } catch(InputMismatchException e) {
+        System.out.println("Enter correct details!");
+        scanner.nextLine();
+    }
     }
 
     private static void viewOrders(String username) {
