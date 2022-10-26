@@ -101,9 +101,11 @@ public class userMenu {
                         Storage.viewOrders(username);
                         break;
                     case 5:
-                        break;
+                        System.out.println("Logged out successfully.");
+                        return;
                     case 6:
-                        System.out.println("Exit");
+                        System.out.println("Bye!");
+                        System.exit(0);
                         break;
                     default:
                         System.out.println("Enter from given options!");

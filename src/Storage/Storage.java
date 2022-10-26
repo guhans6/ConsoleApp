@@ -37,8 +37,6 @@ public class Storage {
                 writer.newLine();
                 writer.close();
                 //To intialize empty cart for customer
-                writer = new BufferedWriter(new FileWriter("cart.txt", true));
-                writer.write(customer.getUserName() + "|null");
                 writer.newLine();
                 writer.close();
                 return true;
@@ -202,9 +200,9 @@ public class Storage {
     private static void displayProduct(String[] split) {
         //this method displays the array with beautiful alignment like a table
         System.out.println("====================================================================================================");
-        System.out.println("Product Id : " + split[1] + "\t\tProduct Name : " + split[2] + "\t\tProduct Price : " + split[3]);
+        System.out.println("Product Id : " + split[1] + "\tBrand : " + split[10] +  "\t\tProduct Name : " + split[2] + "\tProduct Price : " + split[3]);
         System.out.println("Description : " + split[5]);
-        System.out.println("Discount : " + split[7] +  "\t\tDiscounted Price : " + split[8]);
+        System.out.println("Discount : " + split[7] +"%" +  "\t\tDiscounted Price : " + split[8]);
         System.out.println("====================================================================================================");
     }
 
@@ -327,11 +325,6 @@ public class Storage {
         try {
             BufferedReader reader = new BufferedReader(new FileReader("cart.txt"));
             String line = reader.readLine();
-            if(line == null) {
-                System.out.println("Cart is empty.");
-                reader.close();
-                return;
-            }
             double total = 0;
             while(line != null) {
                     String[] id = line.split("\\|");
@@ -348,18 +341,17 @@ public class Storage {
             }
             else {
                 System.out.println("Total Price : " + total);
-            }
-            //asks user if he wants to buy the products in the cart
-            System.out.println("Do you want to buy the products in the cart? (y/n)");
-            String choice = scanner.nextLine();
-            if(choice.equalsIgnoreCase("y")) {
-                buyProducts(username);
+                System.out.println("Do you want to buy the products in the cart? (y/n)");
+                String choice = scanner.nextLine();
+                if(choice.equalsIgnoreCase("y")) {
+                    buyProducts(username);
                 //orders will be deliverd within 3 random days
-                System.out.println("Your order will be delivered within " + (int)(Math.random() * 3 + 1) + " days.");
-                System.out.println("Thank you for shopping with us.");
-            }
-            else {
-                System.out.println("Come back later.");
+                    System.out.println("Your order will be delivered within " + (int)(Math.random() * 3 + 1) + " days.");
+                    System.out.println("Thank you for shopping with us.");
+                }
+                else {
+                    System.out.println("Come back later.");
+                }
             }
         } catch(IOException e) {
             System.out.println("Error can't find products!");
@@ -398,7 +390,7 @@ public class Storage {
                 String[] split = line.split("\\|");
                 if(split[0].equals(username)) {
                     //displays the order time and date
-                    System.out.println("Order Date : " + split[4]);
+                    System.out.println("Order Date : " + split[2]);
                     String product[] = findProdcutByID(split[1]);
                     displayProduct(product);
                     found = true;
