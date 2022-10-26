@@ -8,7 +8,7 @@ public class Mobile implements Product{
     private int productID;
     private String productName;
     private String productDescription;
-    private String productCategory;
+    final private String productCategory = "Mobile";
     private double productDiscount;
     private double productDiscountedPrice;
     private double productRating;
@@ -77,13 +77,19 @@ public class Mobile implements Product{
     }
 
     @Override
-    public void setProductCategory(String productCategory) {
-        this.productCategory = productCategory;
+    public String getProductCategory() {
+        return productCategory;
     }
 
     @Override
-    public String getProductCategory() {
-        return productCategory;
+    public void setProductBrand(String productBrand) {
+        this.mobileBrand = productBrand;
+        
+    }
+
+    @Override
+    public String getProductBrand() {
+        return mobileBrand;
     }
 
     @Override
@@ -202,16 +208,11 @@ public class Mobile implements Product{
 
     @Override
     public String toString() {
-        return "Mobile [price=" + price + ", quantity=" + quantity + ", productID=" + productID + ", productName="
-                + productName + ", productDescription=" + productDescription + ", productCategory=" + productCategory
-                + ", productDiscount=" + productDiscount + ", productDiscountedPrice=" + productDiscountedPrice
-                + ", productRating=" + productRating + ", mobileBrand=" + mobileBrand
-                + ", mobileColor=" + mobileColor + ", mobileRam=" + mobileRam + ", mobileRom=" + mobileRom
-                + ", mobileBattery=" + mobileBattery + ", mobileCamera=" + mobileCamera + ", mobileDisplay="
-                + mobileDisplay + ", mobileProcessor=" + mobileProcessor + ", mobileOs=" + mobileOs + ", mobileNetwork="
-                + ", mobileWarranty=" + mobileWarranty + ", mobileFeatures=" + mobileFeatures + ", mobileOtherDetails=" + "]";
-    }
-
-    
+        return productID + "|" + productName + "|" + price + "|" + quantity + "|" + productDescription + "|" + productCategory 
+               + "|" + productDiscount + "|" + productDiscountedPrice + "|" + productRating + "|" + mobileBrand + "|" + mobileColor 
+               + "|" + mobileRam + "|" + mobileRom + "|" + mobileBattery + "|" + mobileCamera + "|" + mobileDisplay + "|" 
+               + mobileProcessor + "|" + mobileOs + "|" + mobileWarranty;
+        
+    }    
 
 }

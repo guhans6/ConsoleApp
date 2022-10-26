@@ -1,4 +1,6 @@
 package Seller;
+
+
 public class Laptop implements Product {
 
     //varibles
@@ -7,7 +9,7 @@ public class Laptop implements Product {
     private int productID;
     private String productName;
     private String productDescription;
-    private String productCategory;
+    final private String productCategory = "Laptop";
     private double productDiscount;
     private double productDiscountedPrice;
     private double productRating;
@@ -21,8 +23,7 @@ public class Laptop implements Product {
     private String laptopOs;
     private String laptopWarranty;
     private String laptopFeatures;
-
-    //getters and setters
+    private String graphicsCard;
 
     @Override
     public void setPrice(double price) {
@@ -65,6 +66,16 @@ public class Laptop implements Product {
     }
 
     @Override
+    public void setProductBrand(String productBrand) {
+        this.laptopBrand = productBrand;
+    }
+
+    @Override
+    public String getProductBrand() {
+        return laptopBrand;
+    }
+
+    @Override
     public void setProductDescription(String productDescription) {
         this.productDescription = productDescription;
     }
@@ -72,11 +83,6 @@ public class Laptop implements Product {
     @Override
     public String getProductDescription() {
         return productDescription;
-    }
-
-    @Override
-    public void setProductCategory(String productCategory) {
-        this.productCategory = productCategory;
     }
 
     @Override
@@ -194,5 +200,19 @@ public class Laptop implements Product {
         this.laptopFeatures = laptopFeatures;
     }
 
+    public void setLaptopGraphicsCard(String graphicsCard) {
+        this.graphicsCard = graphicsCard;
+    }
 
+    public String getLaptopGraphicsCard() {
+        return graphicsCard;
+    }
+
+    @Override
+    public String toString() {
+        return productID + "|" + productName + "|" + price + "|" + quantity + "|" + productDescription + "|" + productCategory
+                + "|" + productDiscount + "|" + productDiscountedPrice + "|" + productRating + "|" + laptopBrand + "|"
+                + laptopColor + "|" + laptopRam + "|" + laptopRom + "|" + laptopBattery + "|" + laptopDisplay + "|"
+                + laptopProcessor + "|" + laptopOs + "|" + laptopWarranty + "|" + graphicsCard;
+    }
 }

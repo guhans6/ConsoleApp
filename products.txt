@@ -1,0 +1,2 @@
+guhan|1|X2|15000.0|8|null|Mobile|20.0|0.0|0.0|Realme|Blue|6|256|24|null|6|snapdragon|Android|1
+naveen|2|XP|55000.0|5|Powerful Gaming laptop!|Laptop|10.0|0.0|0.0|Dell|Blacj|8|512|8 hours|15.6|i7|Windows|1|4

@@ -1,5 +1,5 @@
 package Seller;
-import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 import Storage.Storage;
@@ -13,7 +13,7 @@ public class Seller implements User{
     private String sellerEmail;
     private String sellerPassword;
     private String sellerOfficeAddress;
-    private ArrayList<Product> products;
+    // private ArrayList<Product> products;
 
     @Override
     public void setName(String sellerName) {
@@ -68,34 +68,28 @@ public class Seller implements User{
     //seller registration get input from user
     public void sellerRegistration() {
         Scanner input = new Scanner(System.in);
-        System.out.println("Enter your name:");
-        setName(input.nextLine());
-        System.out.println("Enter your username:");
-        setUserName(input.nextLine());
-        System.out.println("Enter your email:");
-        setEmail(input.nextLine());
-        System.out.println("Enter your password:");
-        setPassword(input.nextLine());
-        System.out.println("Enter your office address:");
-        setAddress(input.nextLine());
+        try {
+            System.out.println("Enter your name:");
+            setName(input.nextLine());
+            System.out.println("Enter your username:");
+            setUserName(input.nextLine());
+            System.out.println("Enter your email:");
+            setEmail(input.nextLine());
+            System.out.println("Enter your password:");
+            setPassword(input.nextLine());
+            System.out.println("Enter your office address:");
+            setAddress(input.nextLine());
+        } catch (InputMismatchException e) {
+            System.out.println("Please enter valid input!");
+        }
+        //check every input is not empty
+        if(getName().equals("") || getUserName().equals("") || getEmail().equals("") || getPassword().equals("") || getAddress().equals("")) {
+            System.out.println("Please fill all the fields!");
+        } else {
         //save seller to seller file
-        Storage.saveSeller(this);
-        System.out.println("You have registered successfully!");
+            if(Storage.saveSeller(this)) {
+                System.out.println("You have registered successfully!");
+            }
+        }
     }
-
-
-    // //add product to products file
-    // public void addProduct(Product product) {
-    //     products.add(product);
-    // }
-    
-    // //delete product from products file
-    // public void deleteProduct(Product product) {
-    //     products.remove(product);
-    // }
-    
-    // //edit product from products file
-    // public void editProduct(Product product) {
-    //     products.set(products.indexOf(product),product);
-    // }
 }
