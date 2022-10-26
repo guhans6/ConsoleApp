@@ -1,2 +1,1 @@
-guhan|1|X2|15000.0|8|null|Mobile|20.0|guhan|
-guhan|1|X2|15000.0|8|null|Mobile|20.0|guhan|
+g|1|2022/10/26
