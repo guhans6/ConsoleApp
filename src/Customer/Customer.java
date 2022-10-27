@@ -1,11 +1,11 @@
-package Customer;
+package customer;
 
 
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
-import Storage.Storage;
-import Users.User;
+import storage.FileStorage;
+import user.User;
 
 public class Customer implements User {
 
@@ -82,16 +82,22 @@ public class Customer implements User {
             customer.setEmail(scanner.nextLine());
             System.out.print("Enter your address: ");
             customer.setAddress(scanner.nextLine());
+            if(FileStorage.saveCustomer(customer)) {
+                System.out.println("You have been registered!");
+            } else {
+                System.out.println("Registration failed!");
+            }
         } 
         catch(InputMismatchException e) {
             System.out.println("Enter Correct credentials!");
-        }
-        //store in file
-        if(Storage.saveCustomer(customer)) {
-            System.out.println("You have been registered!");
+        } catch(Exception e) {
+            System.out.println("Error occured!");
         }
     }
 
-    
-    
+    @Override
+    public String toString() {
+        return this.getName() + "|" + this.getUserName() +"|" + this.getPassword() 
+               + "|" + this.getEmail() + "|" + this.getAddress();
+    }
 }

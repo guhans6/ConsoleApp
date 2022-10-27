@@ -1,5 +1,5 @@
-package Customer;
-import Seller.Product;
+package customer;
+import product.Product;
 
 public class Orders {
 

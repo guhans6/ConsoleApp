@@ -1,9 +1,9 @@
-package Seller;
+package seller;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
-import Storage.Storage;
-import Users.User;
+import storage.FileStorage;
+import user.User;
 
 public class Seller implements User{
 
@@ -13,7 +13,6 @@ public class Seller implements User{
     private String sellerEmail;
     private String sellerPassword;
     private String sellerOfficeAddress;
-    // private ArrayList<Product> products;
 
     @Override
     public void setName(String sellerName) {
@@ -79,17 +78,26 @@ public class Seller implements User{
             setPassword(input.nextLine());
             System.out.println("Enter your office address:");
             setAddress(input.nextLine());
+            if(getName().equals("") || getUserName().equals("") || getEmail().equals("") || getPassword().equals("") || getAddress().equals("")) {
+                System.out.println("Please fill all the fields!");
+            } else {
+                if(FileStorage.saveSeller(this)) {
+                    System.out.println("You have registered successfully!");
+                }
+            }
         } catch (InputMismatchException e) {
             System.out.println("Please enter valid input!");
+        } catch (Exception e) {
+            System.out.println("Something went wrong!");
         }
-        //check every input is not empty
-        if(getName().equals("") || getUserName().equals("") || getEmail().equals("") || getPassword().equals("") || getAddress().equals("")) {
-            System.out.println("Please fill all the fields!");
-        } else {
-        //save seller to seller file
-            if(Storage.saveSeller(this)) {
-                System.out.println("You have registered successfully!");
-            }
-        }
+        
     }
+
+    @Override
+    public String toString() {
+        return this.getName() + "|" + this.getUserName() +"|" + this.getPassword() +
+               "|" + this.getEmail() + "|" + this.getAddress() + "|" + "null" + "|";
+    }
+
+    
 }

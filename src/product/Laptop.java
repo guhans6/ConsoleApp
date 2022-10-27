@@ -1,4 +1,4 @@
-package Seller;
+package product;
 
 
 public class Laptop implements Product {

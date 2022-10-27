@@ -1,4 +1,4 @@
-package Seller;
+package product;
 
 public interface Product {
     
