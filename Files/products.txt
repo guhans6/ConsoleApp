@@ -1,2 +1,1 @@
-naveen|1|XP|45000.0|1|Back to School Laptop|Laptop|5.0|42750.0|0.0|Dell|Black|8|512|8 hours|25.6|i5|Windows 10
-a|2|Neo|15000.0|1|null|Mobile|3.0|14550.0|Realme|Green|6|128|24 Hours|null|5.6|Sanpdragon 755|Android
+gayuabi|3|null|0.0|0|null|Laptop|0.0|0.0|dell|null|null|null|null|null|null|null|null|

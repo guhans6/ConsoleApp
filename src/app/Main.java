@@ -1,12 +1,11 @@
 package app;
 
-import menu.UserMenu;
+import controller.UserController;
 
 public class Main {
     public static void main(String[] args) {
         
-        UserMenu userMenu = UserMenu.getInstance();
-        userMenu.userMenu();
-        
+        UserController userController = UserController.getInstance();
+        userController.userMenu();
     }
 }
