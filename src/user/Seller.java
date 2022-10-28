@@ -1,9 +1,9 @@
-package seller;
+package user;
+import java.io.IOException;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
 import storage.FileStorage;
-import user.User;
 
 public class Seller implements User{
 
@@ -65,7 +65,8 @@ public class Seller implements User{
     }
     
     //seller registration get input from user
-    public void sellerRegistration() {
+    public void register(short userType) throws InputMismatchException {
+        System.out.println("Welcome! Enter the following details ");
         Scanner input = new Scanner(System.in);
         try {
             System.out.println("Enter your name:");
@@ -78,19 +79,16 @@ public class Seller implements User{
             setPassword(input.nextLine());
             System.out.println("Enter your office address:");
             setAddress(input.nextLine());
-            if(getName().equals("") || getUserName().equals("") || getEmail().equals("") || getPassword().equals("") || getAddress().equals("")) {
+            if(getName().equals("") || getUserName().equals("") || getEmail().equals("") 
+                    || getPassword().equals("") || getAddress().equals("")) {
                 System.out.println("Please fill all the fields!");
             } else {
-                if(FileStorage.saveSeller(this)) {
-                    System.out.println("You have registered successfully!");
-                }
+                FileStorage.getInstance().addUser(this, userType);
+                System.out.println("Registration successful!");
             }
-        } catch (InputMismatchException e) {
-            System.out.println("Please enter valid input!");
-        } catch (Exception e) {
-            System.out.println("Something went wrong!");
+        } catch (IOException e) {
+            System.out.println("Error occured! Please try again!"); 
         }
-        
     }
 
     @Override
@@ -98,6 +96,5 @@ public class Seller implements User{
         return this.getName() + "|" + this.getUserName() +"|" + this.getPassword() +
                "|" + this.getEmail() + "|" + this.getAddress() + "|" + "null" + "|";
     }
-
     
 }

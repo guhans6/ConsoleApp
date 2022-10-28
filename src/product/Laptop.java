@@ -12,7 +12,6 @@ public class Laptop implements Product {
     final private String productCategory = "Laptop";
     private double productDiscount;
     private double productDiscountedPrice;
-    private double productRating;
     private String laptopBrand;
     private String laptopColor;
     private String laptopRam;
@@ -22,8 +21,6 @@ public class Laptop implements Product {
     private String laptopProcessor;
     private String laptopOs;
     private String laptopWarranty;
-    private String laptopFeatures;
-    private String graphicsCard;
 
     @Override
     public void setPrice(double price) {
@@ -110,16 +107,6 @@ public class Laptop implements Product {
         return productDiscountedPrice;
     }
 
-    @Override
-    public void setProductRating(double productRating) {
-        this.productRating = productRating;
-    }
-
-    @Override
-    public double getProductRating() {
-        return this.productRating;
-    }
-
     public String getLaptopBrand() {
         return laptopBrand;
     }
@@ -192,27 +179,11 @@ public class Laptop implements Product {
         this.laptopWarranty = laptopWarranty;
     }
 
-    public String getLaptopFeatures() {
-        return laptopFeatures;
-    }
-
-    public void setLaptopFeatures(String laptopFeatures) {
-        this.laptopFeatures = laptopFeatures;
-    }
-
-    public void setLaptopGraphicsCard(String graphicsCard) {
-        this.graphicsCard = graphicsCard;
-    }
-
-    public String getLaptopGraphicsCard() {
-        return graphicsCard;
-    }
-
     @Override
     public String toString() {
         return productID + "|" + productName + "|" + price + "|" + quantity + "|" + productDescription + "|" + productCategory
-                + "|" + productDiscount + "|" + productDiscountedPrice + "|" + productRating + "|" + laptopBrand + "|"
+                + "|" + productDiscount + "|" + productDiscountedPrice + "|" + laptopBrand + "|"
                 + laptopColor + "|" + laptopRam + "|" + laptopRom + "|" + laptopBattery + "|" + laptopDisplay + "|"
-                + laptopProcessor + "|" + laptopOs + "|" + laptopWarranty + "|" + graphicsCard;
+                + laptopProcessor + "|" + laptopOs + "|" + laptopWarranty + "|" ;
     }
 }

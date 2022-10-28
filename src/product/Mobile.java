@@ -11,7 +11,6 @@ public class Mobile implements Product{
     final private String productCategory = "Mobile";
     private double productDiscount;
     private double productDiscountedPrice;
-    private double productRating;
     private String mobileBrand;
     private String mobileColor;
     private String mobileRam;
@@ -22,7 +21,6 @@ public class Mobile implements Product{
     private String mobileProcessor;
     private String mobileOs;
     private String mobileWarranty;
-    private String mobileFeatures;
 
     //getters and setters
 
@@ -112,16 +110,6 @@ public class Mobile implements Product{
         return productDiscountedPrice;
     }
 
-    @Override
-    public void setProductRating(double productRating) {
-        this.productRating = productRating;
-    }
-
-    @Override
-    public double getProductRating() {
-        return productRating;
-    }
-
     public String getMobileBrand() {
         return mobileBrand;
     }
@@ -202,14 +190,10 @@ public class Mobile implements Product{
         this.mobileWarranty = mobileWarranty;
     }
 
-    public String getMobileFeatures() {
-        return mobileFeatures;
-    }
-
     @Override
     public String toString() {
         return productID + "|" + productName + "|" + price + "|" + quantity + "|" + productDescription + "|" + productCategory 
-               + "|" + productDiscount + "|" + productDiscountedPrice + "|" + productRating + "|" + mobileBrand + "|" + mobileColor 
+               + "|" + productDiscount + "|" + productDiscountedPrice + "|" + mobileBrand + "|" + mobileColor 
                + "|" + mobileRam + "|" + mobileRom + "|" + mobileBattery + "|" + mobileCamera + "|" + mobileDisplay + "|" 
                + mobileProcessor + "|" + mobileOs + "|" + mobileWarranty;
         

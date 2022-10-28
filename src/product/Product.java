@@ -20,9 +20,5 @@ public interface Product {
     public double getProductDiscount();
     public void setProductDiscountedPrice(double productDiscountedPrice);
     public double getProductDiscountedPrice();
-    public void setProductRating(double productRating);
-    public double getProductRating();
     public String toString();
-    // public void setProductReviews(String productReviews);
-    // public String getProductReviews();
 }

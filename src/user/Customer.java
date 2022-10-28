@@ -1,11 +1,11 @@
-package customer;
+package user;
 
 
+import java.io.IOException;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
 import storage.FileStorage;
-import user.User;
 
 public class Customer implements User {
 
@@ -66,8 +66,8 @@ public class Customer implements User {
         return address;
     }
 
-    public void customerRegistration() {
-        System.out.println("Welocme! Enter the following details ");
+    public void register(short userType) throws InputMismatchException {
+        System.out.println("Welcome! Enter the following details ");
         Customer customer = new Customer();
         Scanner scanner = new Scanner(System.in);
         //get customer details
@@ -82,16 +82,10 @@ public class Customer implements User {
             customer.setEmail(scanner.nextLine());
             System.out.print("Enter your address: ");
             customer.setAddress(scanner.nextLine());
-            if(FileStorage.saveCustomer(customer)) {
-                System.out.println("You have been registered!");
-            } else {
-                System.out.println("Registration failed!");
-            }
-        } 
-        catch(InputMismatchException e) {
-            System.out.println("Enter Correct credentials!");
-        } catch(Exception e) {
-            System.out.println("Error occured!");
+
+            FileStorage.getInstance().addUser(customer, userType);
+        } catch(IOException e) {
+            System.out.println("Error occured! Please try again!");
         }
     }
 
