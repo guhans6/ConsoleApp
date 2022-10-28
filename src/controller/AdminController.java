@@ -28,7 +28,7 @@ public class AdminController {
         return adminController;
     }
 
-    public void adminMenu(String username) throws IOException, InputMismatchException {
+    void adminMenu(String username) throws IOException, InputMismatchException {
         short choice;
         
         System.out.println("Welcome "+username);
