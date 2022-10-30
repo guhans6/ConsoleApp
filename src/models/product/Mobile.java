@@ -1,4 +1,4 @@
-package product;
+package models.product;
 
 public class Mobile implements Product{
 
@@ -194,7 +194,7 @@ public class Mobile implements Product{
     public String toString() {
         return productID + "|" + productName + "|" + price + "|" + quantity + "|" + productDescription + "|" + productCategory 
                + "|" + productDiscount + "|" + productDiscountedPrice + "|" + mobileBrand + "|" + mobileColor 
-               + "|" + mobileRam + "|" + mobileRom + "|" + mobileBattery + "|" + mobileCamera + "|" + mobileDisplay + "|" 
+               + "|" + mobileRam + "|" + mobileRom + "|" + mobileBattery + "|" + mobileDisplay + "|" 
                + mobileProcessor + "|" + mobileOs + "|" + mobileWarranty;
         
     }    

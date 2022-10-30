@@ -4,79 +4,73 @@ import java.io.IOException;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
-import menu.DisplayMenu;
-import product.Laptop;
-import product.Mobile;
-import storage.FileStorage;
+import models.user.Seller;
 import storage.SellerStorage;
+import ui.DisplayMenu;
 
 public class SellerController {
 
-    private static SellerController sellerController = null;
     DisplayMenu displayMenu = DisplayMenu.getInstance();
     Scanner scanner = new Scanner(System.in);
-    FileStorage fileStorage = FileStorage.getInstance();
-    SellerStorage sellerStorage = SellerStorage.getInstance();
-    
+    ProductController productController = new ProductController();
+    SellerStorage sellerStorage = new SellerStorage();
 
-    private SellerController() {
-    }
-
-    public static SellerController getInstance() {
-        if(sellerController == null) {
-            sellerController = new SellerController();
-        }
-        return sellerController;
-    }
-
-    void sellerMenu(String username) throws InputMismatchException, IOException {
+    void sellerMenu(String username){
         short choice;
-        FileStorage fileStorage = FileStorage.getInstance();
 
         System.out.println("Welcome "+username);
         while(true){
             displayMenu.displaySellerMenu();
-            choice = scanner.nextShort();
-            switch(choice){
-                case 1:
-                    addProduct(username);
-                    break;
-                case 2:
-                    fileStorage.getProducts(username);
-                    break;
-                case 3:
-                    updateStock(username);
-                    break;
-                case 4:
-                    deleteProduct(username);
-                    break;
-                case 5:
-                    System.out.println("Logged out successfully!");
-                    return;
-                case 6:
-                    System.out.println("Bye!");
-                    System.exit(0);
-                default:
-                    System.out.println("Enter from given options!");
+            try {
+                choice = scanner.nextShort();
+                switch(choice){
+                    case 1:
+                        addProduct(username);
+                        break;
+                    case 2:
+                        sellerStorage.getProducts(username);
+                        break;
+                    case 3:
+                        updateStock(username);
+                        break;
+                    case 4:
+                        deleteProduct(username);
+                        break;
+                    case 5:
+                        System.out.println("Logged out successfully!");
+                        return;
+                    case 6:
+                        System.out.println("Bye!");
+                        System.exit(0);
+                    default:
+                        System.out.println("Enter from given options!");
+                }
+            } catch(InputMismatchException e) {
+                System.out.println("Enter from given options!");
+                // e.printStackTrace();
+                scanner.nextLine();
+            } catch (IOException e) {
+                // e.printStackTrace();
+                System.out.println("Error occured!");
             }
         }
     }
 
-    void addProduct(String username) throws InputMismatchException, IOException {
+    private void addProduct(String username) throws InputMismatchException, IOException {
         String type = displayMenu.getProductType();
 
         if(type.equals("Laptop")) {
-            addLaptop(username);
+            productController.addLaptop(username);
             return;
         }
         else if(type.equals("Mobile")) {
-            addMobile(username);
+            productController.addMobile(username);
             return;
         }
         System.out.println("Enter from given options!");
     }
 
-    void updateStock(String username) throws InputMismatchException, IOException {
+    private void updateStock(String username) throws InputMismatchException, IOException {
         short productId;
         short quantity;
 
@@ -84,7 +78,7 @@ public class SellerController {
         productId = scanner.nextShort();
         System.out.println("Enter quantity to add: ");
         quantity = scanner.nextShort();
-        if(fileStorage.checkUserProduct(username, productId)) {
+        if(checkUserProductAssociated(username, productId)) {
             sellerStorage.addStock(productId, quantity);
         }
     }
@@ -93,89 +87,48 @@ public class SellerController {
         System.out.println("Enter product ID to delete: ");
         int id = scanner.nextInt();
         scanner.nextLine();
-        if(fileStorage.checkUserProduct(username, id)) {
+
+        if(checkUserProductAssociated(username, id)) {
             sellerStorage.deleteProduct(id);
         }
-        else {
-            System.out.println("You don't have this product!");
+    }
+
+    private boolean checkUserProductAssociated(String username, int id) throws IOException {
+
+        if(sellerStorage.checkUserProduct(username, id)) {
+            return true;
+        } else {
+            System.out.println("You are not associated with this product.");
+            return false;
         }
     }
 
-    //add laptop
-    void addLaptop(String username) throws IOException,InputMismatchException {
-        Laptop laptop = new Laptop();
+     //seller registration get input from user
+     public void registerSeller(short userType) throws InputMismatchException {
+        System.out.println("Welcome! Enter the following details ");
+        Seller seller = new Seller();
 
-        System.out.println("Enter Laptop Brand: ");
-        scanner.nextLine();
-        laptop.setLaptopBrand(scanner.nextLine());
-        System.out.println("Enter Laptop Name: ");
-        laptop.setProductName(scanner.nextLine());
-        System.out.println("Enter Laptop Price: ");
-        laptop.setPrice(scanner.nextFloat());
-        scanner.nextLine();
-        System.out.println("Enter Laptop Quantity: ");
-        laptop.setQuantity(scanner.nextInt());
-        scanner.nextLine();
-        System.out.println("Enter discount percentage");
-        laptop.setProductDiscount(scanner.nextFloat());
-        scanner.nextLine();
-        System.out.println("Enter Laptop RAM: ");
-        laptop.setLaptopRam(scanner.nextLine());
-        System.out.println("Enter Laptop Processor: ");
-        laptop.setLaptopProcessor(scanner.nextLine());
-        System.out.println("Enter Laptop Hard Disk: ");
-        laptop.setLaptopRom(scanner.nextLine());
-        System.out.println("Enter Laptop Screen Size: ");
-        laptop.setLaptopDisplay(scanner.nextLine());
-        System.out.println("Enter Laptop Operating System: ");
-        laptop.setLaptopOs(scanner.nextLine());
-        System.out.println("Enter Laptop Battery: ");
-        laptop.setLaptopBattery(scanner.nextLine());
-        System.out.println("Enter Laptop Color: ");
-        laptop.setLaptopColor(scanner.nextLine());
-        System.out.println("Enter Laptop Warranty: ");
-        laptop.setLaptopWarranty(scanner.nextLine());
-        System.out.println("Enter Laptop Discription: ");
-        laptop.setProductDescription(scanner.nextLine());
-
-        sellerStorage.addProduct(username, laptop);
-    }
-
-    //add mobile
-    void addMobile(String username) throws IOException, InputMismatchException {
-        Mobile mobile = new Mobile();
-
-        System.out.println("Enter Mobile Brand: ");
-        mobile.setProductBrand(scanner.nextLine());
-        System.out.println("Enter Mobile Name: ");
-        mobile.setProductName(scanner.nextLine());
-        System.out.println("Enter Mobile Price: ");
-        mobile.setPrice(scanner.nextFloat());
-        System.out.println("Enter Mobile Quantity: ");
-        mobile.setQuantity(scanner.nextInt());
-        System.out.println("Enter discount percentage");
-        mobile.setProductDiscount(scanner.nextFloat());
-        scanner.nextLine();
-        System.out.println("Enter Mobile RAM: ");
-        mobile.setMobileRam(scanner.nextLine());
-        System.out.println("Enter Mobile Processor: ");
-        mobile.setMobileProcessor(scanner.nextLine());
-        System.out.println("Enter Mobile Hard Disk: ");
-        mobile.setMobileRom(scanner.nextLine());
-        System.out.println("Enter Mobile Screen Size: ");
-        mobile.setMobileDisplay(scanner.nextLine());
-        System.out.println("Enter Mobile Operating System: ");
-        mobile.setMobileOs(scanner.nextLine());
-        System.out.println("Enter Mobile Battery: ");
-        mobile.setMobileBattery(scanner.nextLine());
-        System.out.println("Enter Mobile Color: ");
-        mobile.setMobileColor(scanner.nextLine());
-        System.out.println("Enter Mobile Warranty: ");
-        mobile.setMobileWarranty(scanner.nextLine());
-        System.out.println("Enter Mobile Description");
-        mobile.setProductDescription(scanner.nextLine());
-
-        sellerStorage.addProduct(username, mobile);
+        System.out.println("Enter your name:");
+        seller.setName(scanner.nextLine());
+        System.out.println("Enter your username:");
+        seller.setUserName(scanner.nextLine());
+        System.out.println("Enter your email:");
+        seller.setEmail(scanner.nextLine());
+        System.out.println("Enter your password:");
+        seller.setPassword(scanner.nextLine());
+        System.out.println("Enter your office address:");
+        seller.setAddress(scanner.nextLine());
+        if(seller.getName().equals("") || seller.getUserName().equals("") || seller.getEmail().equals("") 
+                || seller.getPassword().equals("") || seller.getAddress().equals("")) {
+            System.out.println("Please fill all the fields!");
+            return;
+        } 
+        sellerStorage.addUser(seller, userType);
     }
     
+    public void close() throws IOException {
+        sellerStorage.close();
+        productController.close();
+        scanner.close();
+    }
 }

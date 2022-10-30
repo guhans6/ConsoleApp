@@ -1,35 +1,22 @@
 package controller;
+
 import java.io.IOException;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
-import menu.DisplayMenu;
 import storage.FileStorage;
-import user.Customer;
-import user.Seller;
-import user.User;
+import ui.DisplayMenu;
 
 public class UserController {
 
-    private static UserController userController = null;
     Scanner scanner = new Scanner(System.in);
-    FileStorage fileStorage = FileStorage.getInstance();
+    FileStorage fileStorage = new FileStorage();
     DisplayMenu displayMenu = DisplayMenu.getInstance();
-    CustomerController customerController = CustomerController.getInstance();
-    SellerController sellerController = SellerController.getInstance();
-    AdminController adminController = AdminController.getInstance();
+    CustomerController customerController = new CustomerController();
+    SellerController sellerController = new SellerController();
+    AdminController adminController = new AdminController();
 
-    private UserController() {
-    }
-
-    public static UserController getInstance() {
-        if(userController == null) {
-            userController = new UserController();
-        }
-        return userController;
-    }
-
-    public void userMenu(){
+    public void userMenu() {
         short input=0;
         boolean b=true;
         while(b)
@@ -47,84 +34,83 @@ public class UserController {
                     case 3:
                         b = false;
                         System.out.println("Bye!");
+                        System.exit(0);
                         break;
                     default:
                         System.out.println("Enter from given options!");
-                }
+            } 
             } catch(InputMismatchException e) {
-                e.printStackTrace();
-                // System.out.println("Enter Input Correctly!");
-                scanner.nextLine();
-            } catch(Exception e) {
-                e.printStackTrace();
-                // System.out.println("Error Occured! Try Again!");
+                System.out.println("Enter correct input!");
+                // e.printStackTrace();
                 scanner.nextLine();
             }
         }
-        scanner.close();
     }
 
-    private void userLogin() throws InputMismatchException,IOException {
+    private void userLogin() {
         short userType = userType();
         String userName;
         String password;
-        if(userType == 4) {
-            return;
-        }
 
-        System.out.print("Enter username: ");
-        userName = scanner.next();
-        System.out.print("Enter password: ");
-        password = scanner.next();
-        int checker = fileStorage.checkUser(userName, password, userType);
-        switch(checker) {
-            case 1:
-                customerController.customerMenu(userName);
-                break;
-            case 2:
-                sellerController.sellerMenu(userName);
-                break;
-            case 3:
-                adminController.adminMenu(userName);
-                break;
-            case -1:
-                System.out.println("Login Failed!");
-                break;
+        try {
+            System.out.print("Enter username: ");
+            userName = scanner.next();
+            System.out.print("Enter password: ");
+            password = scanner.next();
+            int checker;
+                checker = fileStorage.checkUser(userName, password, userType);
+                switch(checker) {
+                    case 1:
+                        customerController.customerMenu(userName);
+                        break;
+                    case 2:
+                        sellerController.sellerMenu(userName);
+                        break;
+                    case 3:
+                        adminController.adminMenu(userName);
+                        break;
+                    case -1:
+                        System.out.println("Login Failed!");
+                        break;
+                }
+        } catch (IOException e) {
+            System.out.println("Error occured! Try again!");
+            // e.printStackTrace();
         }
         
     }
 
     private void registerUser() {
         short userType = userType();
-        User user = null;
 
         if(userType == 1) {
-            user =  new Customer();
-        }
-        else if(userType == 2) {
-            user = new Seller();
-        }
-        else if(userType == 3) {
+            customerController.registerCustomer(userType);
+        } else if(userType == 2) {
+            sellerController.registerSeller(userType);
+        } else if(userType == 3) {
             System.out.println("Admin can't be registered!");
-            return;
         }
-        user.register(userType);
+        return;
     }
 
 
-    private short userType(){ 
+    private short userType() throws InputMismatchException {
+        short userType;
 
         displayMenu.displayUsertypeMenu();
-        try {
-            return scanner.nextShort();
+        userType = scanner.nextShort();
+        if(userType == 4) {
+            userMenu(); 
+        } else if(userType < 1 || userType > 3) {
+            System.out.println("Enter from given options!");
+            userMenu();
         }
-        catch(InputMismatchException e) {
-            System.out.println("Enter corrct option!");
-            scanner.nextLine();
-        }
-        return 4;
+        return userType;
     }
 
-
-
+    // private void close() throws IOException {
+    //     customerController.close();
+    //     sellerController.close();
+    //     adminController.close(); 
+    // }
 }

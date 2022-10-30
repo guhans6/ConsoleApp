@@ -10,42 +10,33 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
-public class CustomerStorage {
+import ui.ProductView;
 
-    private static CustomerStorage userStorage = null;
+public class CustomerStorage extends FileStorage {
+
     Scanner scanner = new Scanner(System.in);
     private File orders = new File("Files/orders.txt");
     private File cart = new File("Files/cart.txt");
     private File products = new File("Files/products.txt");
     private File tempFile = new File("Files/temp.txt");
-    private FileStorage fileStorage = FileStorage.getInstance();
-
-    private CustomerStorage() {
-    }
-
-    public static CustomerStorage getInstance() {
-        if (userStorage == null) {
-            userStorage = new CustomerStorage();
-        }
-        return userStorage;
-    }
+    private BufferedReader reader;
+    private BufferedWriter writer;
 
     //this method gets all the products in the cart in the cart file of the username and displays total price
     public void getCart(String username) throws IOException {
-        BufferedReader reader = new BufferedReader(new FileReader(cart));
+        reader = new BufferedReader(new FileReader(cart));
         String line = reader.readLine();
         double total = 0;
 
         while(line != null) {
             String[] id = line.split("\\|");
             if(id[0].equals(username)) {
-                String[] product = fileStorage.findProdcutByID(id[1]);
-                fileStorage.displayProduct(product);
+                String[] product = findProdcutByID(id[1]);
+                ProductView.displayProduct(product);
                 total += Double.parseDouble(product[8]);
             }
             line = reader.readLine();
         }
-        reader.close();
         if(total == 0) {
             System.out.println("Cart is empty.");
         } else {
@@ -68,13 +59,13 @@ public class CustomerStorage {
         } else if(choice.equalsIgnoreCase("n")) {
             System.out.println("Come back later.");
         } else {
-            System.out.println("Enter correct choice!");
+            System.out.println("Enter correct choice! (y/n)");
         }
     }
     
     public void viewOrders(String username) throws IOException {
         boolean found = false;
-        BufferedReader reader = new BufferedReader(new FileReader(orders));
+        reader = new BufferedReader(new FileReader(orders));
         String line = reader.readLine();
 
         while(line != null) {
@@ -83,13 +74,12 @@ public class CustomerStorage {
             if(split[0].equals(username)) {
                 //displays the order time and date
                 System.out.println("Order Date : " + split[2]);
-                String product[] = fileStorage.findProdcutByID(split[1]);
-                fileStorage.displayProduct(product);
+                String product[] = findProdcutByID(split[1]);
+                ProductView.displayProduct(product);
                 found = true;
             }
             line = reader.readLine();
         }
-        reader.close();
         if(!found) {
             System.out.println("No orders history found.");
         }
@@ -98,10 +88,10 @@ public class CustomerStorage {
     public void addToCart(String username, int id) throws IOException {
         if(checkStock(id)) {
             //add product and usernmae in cart file
-            BufferedWriter writer = new BufferedWriter(new FileWriter(cart, true));
+            writer = new BufferedWriter(new FileWriter(cart, true));
             writer.write(username + "|" + id);
             writer.newLine();
-            writer.close();
+            writer.flush();
             System.out.println("Product added to cart successfully.");
 
         }
@@ -109,30 +99,25 @@ public class CustomerStorage {
 
     //calculate total price of the products in the cart by username and display it if user wants to buy add it to orders file
     public void buyProducts(String username) throws IOException {
-        BufferedReader reader = new BufferedReader(new FileReader(cart));
+        reader = new BufferedReader(new FileReader(cart));
         String line = reader.readLine();
         
         while(line != null) {
 
             String[] split = line.split("\\|");
             if(split[0].equals(username)) {
-                //add product to orders file
-                addOrder(username,split[1]);
-                //remove product from stock
-                removeStock(split[1]);
-                //remove product from cart
-                clearCart(username); 
-            }
+                addOrder(username,split[1]);    //add product to orders file
+                removeStock(split[1]);          //remove stock from products file
+                clearCart(username);            //clear cart
+            }   
             line = reader.readLine();
         }
-        reader.close();
     }
 
+    //remove product from cart
     private void clearCart(String username) throws IOException {
-        //remove product from cart
-        BufferedReader reader = new BufferedReader(new FileReader(cart));
-        File tempFile = new File("temp.txt");
-        BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile));
+        reader = new BufferedReader(new FileReader(cart));
+        writer = new BufferedWriter(new FileWriter(tempFile));
         tempFile.createNewFile();
         String line = reader.readLine();
         while(line != null) {
@@ -146,50 +131,47 @@ public class CustomerStorage {
             writer.newLine();
             line = reader.readLine();
         }
-        reader.close();
-        writer.close();
+        writer.flush();
         cart.delete();
         tempFile.renameTo(cart);
     }
 
     //this method add the order to orders file
     private void addOrder(String username, String productId) throws IOException {
-        BufferedWriter writer = new BufferedWriter(new FileWriter(orders, true));
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        writer = new BufferedWriter(new FileWriter(orders, true));
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
         writer.write(username + "|" + productId + "|" + dtf.format(LocalDateTime.now()));
         writer.newLine();
-        writer.close();
+        writer.flush();
     }
 
     //this method checks if stock is available for the product
     private boolean checkStock(int id) throws IOException {
-        BufferedReader reader = new BufferedReader(new FileReader(products));
+        reader = new BufferedReader(new FileReader(products));
         String line = reader.readLine();
+        
         while(line != null) {
 
             String[] split = line.split("\\|");
             if(Integer.parseInt(split[1]) == id) {
                 if(Integer.parseInt(split[4]) > 0) {
-                    reader.close();
                     return true;
                 } else {
                     System.out.println("Product is out of stock.");
-                    reader.close();
                     return false;
                 }
             }
             line = reader.readLine();
         }
         System.out.println("Product not found.");
-        reader.close();
         return false;
     }
 
     //this method removes the product from stock
     public void removeStock(String id) throws IOException {
-        BufferedReader reader = new BufferedReader(new FileReader(products));
-        BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile));
+        reader = new BufferedReader(new FileReader(products));
+        writer = new BufferedWriter(new FileWriter(tempFile));
         String stockString;
 
         tempFile.createNewFile();
@@ -199,7 +181,7 @@ public class CustomerStorage {
             String[] split = line.split("\\|");
             if(split[1].equals(id)) {
                 int stock = Integer.parseInt(split[4]);
-                stockString = fileStorage.getStockString(split);
+                stockString = getStockString(split);
                 stock--;
                 line = split[0] + "|" + split[1] + "|" + split[2] + "|" + split[3] + "|" + stock + "|" + stockString;
             }
@@ -207,9 +189,14 @@ public class CustomerStorage {
             writer.newLine();
             line = reader.readLine();
         }
-        reader.close();
-        writer.close();
+        writer.flush();
         products.delete();
         tempFile.renameTo(products);
+    }
+
+    //close all the objects
+    public void close() throws IOException {
+        reader.close();
+        writer.close();
     }
 }

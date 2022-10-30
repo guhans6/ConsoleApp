@@ -4,61 +4,55 @@ import java.io.IOException;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
-import menu.DisplayMenu;
 import storage.AdminStorage;
-import storage.FileStorage;
+import ui.DisplayMenu;
 
 public class AdminController {
 
-    private static AdminController adminController = null;
-    AdminStorage adminStorage = AdminStorage.getInstance();
-    FileStorage fileStorage = FileStorage.getInstance();
+    AdminStorage adminStorage = new AdminStorage();
     DisplayMenu displayMenu = DisplayMenu.getInstance();
-    CustomerController customerController = CustomerController.getInstance();
-    SellerController sellerController = SellerController.getInstance();
+    CustomerController customerController = new CustomerController();
+    SellerController sellerController = new SellerController();
     Scanner scanner = new Scanner(System.in);
 
-    private AdminController() {
-    }
-
-    public static AdminController getInstance() {
-        if(adminController == null) {
-            adminController = new AdminController();
-        }
-        return adminController;
-    }
-
-    void adminMenu(String username) throws IOException, InputMismatchException {
+     void adminMenu(String username) {
         short choice;
-        
         System.out.println("Welcome "+username);
         while(true){
             displayMenu.displayAdminMenu();
             choice = scanner.nextShort();
-            switch(choice){
-                case 1:
-                    FileStorage.getInstance().deatileProductView("Laptop");
-                    FileStorage.getInstance().deatileProductView("Mobile");
-                    break;
-                case 2:
-                    adminStorage.displayAllSellers();
-                    break;
-                case 3:
-                    adminStorage.displayAllCustomers();
-                    break;
-                case 4:
-                    sellerController.deleteProduct("Admin");
-                    break;
-                case 5:
-                    deleteUser();
-                    break;
-                case 6:
-                    return;
-                case 7:
-                    System.out.println("Bye!");
-                    System.exit(0);
-                default:
-                    System.out.println("Enter from given options!");
+            try {
+                switch(choice){
+                    case 1:
+                        adminStorage.deatiledProductView(displayMenu.getProductType());
+                        break;
+                    case 2:
+                        adminStorage.displayAllSellers();
+                        break;
+                    case 3:
+                        adminStorage.displayAllCustomers();
+                        break;
+                    case 4:
+                        sellerController.deleteProduct("Admin");
+                        break;
+                    case 5:
+                        deleteUser();
+                        break;
+                    case 6:
+                        return;
+                    case 7:
+                        System.out.println("Bye!");
+                        System.exit(0);
+                    default:
+                        System.out.println("Enter from given options!");
+                }
+            }catch(InputMismatchException e){
+                System.out.println("Enter from given options!");
+                e.printStackTrace();
+                scanner.nextLine();
+            } catch (IOException e) {
+                e.printStackTrace();
+                System.out.println("Error occured!");
             }
         }
     }
@@ -72,5 +66,10 @@ public class AdminController {
         scanner.nextLine();
 
         adminStorage.deleteUser(usernameToDelete, userType);
+    }
+
+    public void close() throws IOException {
+        adminStorage.close();
+        scanner.close();
     }
 }

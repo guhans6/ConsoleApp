@@ -1,4 +1,4 @@
-package product;
+package models.product;
 
 
 public class Laptop implements Product {
