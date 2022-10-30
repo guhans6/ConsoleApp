@@ -1,11 +1,4 @@
-package user;
-
-
-import java.io.IOException;
-import java.util.InputMismatchException;
-import java.util.Scanner;
-
-import storage.FileStorage;
+package models.user;
 
 public class Customer implements User {
 
@@ -64,29 +57,6 @@ public class Customer implements User {
     @Override
     public String getAddress() {
         return address;
-    }
-
-    public void register(short userType) throws InputMismatchException {
-        System.out.println("Welcome! Enter the following details ");
-        Customer customer = new Customer();
-        Scanner scanner = new Scanner(System.in);
-        //get customer details
-        try {
-            System.out.print("Enter your name: ");
-            customer.setName(scanner.nextLine());
-            System.out.print("Enter your user name: ");
-            customer.setUserName(scanner.nextLine());
-            System.out.print("Enter your Password ");
-            customer.setPassword(scanner.nextLine());
-            System.out.print("Enter your email: ");
-            customer.setEmail(scanner.nextLine());
-            System.out.print("Enter your address: ");
-            customer.setAddress(scanner.nextLine());
-
-            FileStorage.getInstance().addUser(customer, userType);
-        } catch(IOException e) {
-            System.out.println("Error occured! Please try again!");
-        }
     }
 
     @Override

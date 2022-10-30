@@ -5,4 +5,3 @@ Guhan|g|a|d|44 street|
 ram|ram|123|ram@123|3/123,xyz street
 himalaya|himalayapro|12345|naveen5@gmail.copm|123
 arun|Arun|12345|Aryn@Gnail.com|coimbatore
-shabarish|gayu|19e101|gshabarishsetty@gmail.com|coimbatore,zoho cocovista

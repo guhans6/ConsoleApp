@@ -1,4 +1,4 @@
-package user;
+package models.user;
 
 public interface User {
     
@@ -13,6 +13,5 @@ public interface User {
     public String getPassword();
     public void setAddress(String address);
     public String getAddress();
-    public void register(short userType);
 
 }

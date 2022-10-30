@@ -8,48 +8,40 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import user.User;
+import models.user.User;
+import ui.ProductView;
 
 public class FileStorage {
 
-    private static FileStorage fileStorage = null;
     private File customers = new File("Files/customers.txt");
     private File sellers = new File("Files/sellers.txt");
     private File admins = new File("Files/admins.txt");
     private File products = new File("Files/products.txt");
+    BufferedReader reader;
+    BufferedWriter writer;
 
-    //singleton constructor
-    private FileStorage() {
-    }
-
-    //singleton method
-    public static FileStorage getInstance() {
-        if(fileStorage == null) {
-            fileStorage = new FileStorage();
-        }
-        return fileStorage;
-    }
     
     //method to add user to the file according to the type
-    public void addUser(User user, short userType) throws IOException {
-        File file = getFileByType(userType);
-        BufferedWriter writer;
+    public void addUser(User user, short userType) {
+        try {
+            File file = getFileByType(userType);
 
-        if(!checkUserExists(user, file)){
-            writer = new BufferedWriter(new FileWriter(file, true));
-            writer.write(user.toString());
-            writer.newLine();
-            writer.close();
-            System.out.println("Registered Successfully!");
-            return;
+            if(!checkUserExists(user, file)){
+                writer = new BufferedWriter(new FileWriter(file, true));
+                writer.write(user.toString());
+                writer.newLine();
+                writer.flush();
+                System.out.println("Registered Successfully!");
+            }
+        } catch (IOException e) {
+            System.out.println("Error while adding user. Please try again.");
         }
-        return;
     }
 
     //check if user exists by username,email,number
     public boolean checkUserExists(User user,File file) throws IOException {
         String split[];
-        BufferedReader reader = new BufferedReader(new FileReader(file));
+        reader = new BufferedReader(new FileReader(file));
         String line = reader.readLine();
 
         while(line != null) {
@@ -57,17 +49,14 @@ public class FileStorage {
             split = line.split("\\|");
             if(split[1].equals(user.getUserName())) {
                 System.out.println("Username already exists.");
-                reader.close();
                 return true;
             }
             else if(split[3].equals(user.getEmail())) {
                 System.out.println("Email already assoicated with another account.");
-                reader.close();
                 return true;
             }
             line = reader.readLine();
         }
-        reader.close();
         return false; 
     }
 
@@ -75,63 +64,57 @@ public class FileStorage {
         File file = getFileByType(userType);
         String line;
         String[] split;
-        BufferedReader reader = new BufferedReader(new FileReader(file));
+        reader = new BufferedReader(new FileReader(file));
+
         line = reader.readLine();
         while(line != null) {
             split = line.split("\\|");
             if(split[1].equals(username) && split[2].equals(password)) {
                 System.out.println("Login successful!");
-                reader.close();
                 return userType;
             }
             line = reader.readLine();
         }
-        reader.close();
         System.out.println("Invalid username or password.");
         return -1;
     }
 
-    public void displayProduct(String[] split) {
-        //this method displays the array with beautiful alignment like a table
-        System.out.println("====================================================================================================");
-        System.out.println("Product Id : " + split[1] + "\tBrand : " + split[9] +  "\t\tProduct Name : " + split[2] + "\tProduct Price : " + split[3]);
-        System.out.println("Description : " + split[5]);
-        System.out.println("Discount : " + split[7] +"%" +  "\t\tDiscounted Price : " + split[8] + "\t\tQuantity : " + split[4]);
-        System.out.println("====================================================================================================");
-    }
-
-    public void deatileProductView(String productType) throws IOException {
+    public void deatiledProductView(String productType) throws IOException {
         boolean flag = false;
-        BufferedReader reader = new BufferedReader(new FileReader(products));
+        reader = new BufferedReader(new FileReader(products));
         String line = reader.readLine();
 
         while(line != null) {
 
             String[] split = line.split("\\|");
             if(split[6].equals(productType)) {
-                displayProduct(split);
+                ProductView.displayProductDetails(split);
                 flag = true;
             }
             line = reader.readLine();
         }
-        reader.close();
         if(!flag) {
-            System.out.println("Sorry no products available!");
+            System.out.println("No products found.");
         }
     }
 
     public void getProducts(String sellerName) throws IOException {
-        BufferedReader reader = new BufferedReader(new FileReader(products));
+        reader = new BufferedReader(new FileReader(products));
         String line = reader.readLine();
+        boolean flag = false;
+
         while(line != null) {
 
             String[] split = line.split("\\|");
             if(split[0].equals(sellerName )) {
-                displayProduct(split);
+                ProductView.displayProductDetails(split);
+                flag = true;
             }
             line = reader.readLine();
         }
-        reader.close();
+        if(!flag) {
+            System.out.println("No products found.");
+        }
     }
 
     File getFileByType(short userType) throws FileNotFoundException {
@@ -151,19 +134,17 @@ public class FileStorage {
     }
 
     public String[] findProdcutByID(String productId) throws IOException {
-        BufferedReader reader = new BufferedReader(new FileReader(products));
+        reader = new BufferedReader(new FileReader(products));
         String line = reader.readLine();
 
         while(line != null) {
 
             String[] split = line.split("\\|");
             if(split[1].equals(productId)) {
-                reader.close();
                 return split;
             }
         line = reader.readLine();
         }
-    reader.close();
     System.out.println("Enter Correct ID!");
     return null;
     }
@@ -178,21 +159,23 @@ public class FileStorage {
 
     public boolean checkUserProduct(String username, int productId) throws FileNotFoundException, IOException {
         //check seller is associated with the product or not
-        BufferedReader reader = new BufferedReader(new FileReader(products));
+        reader = new BufferedReader(new FileReader(products));
         String line = reader.readLine();
         String id = String.valueOf(productId);
-        boolean flag = false;
 
         while(line != null) {
 
             String[] split = line.split("\\|");
             if(split[0].equals(username) && split[1].equals(id) || username.equals("Admin")) {
-                flag = true;
-                break;
+                return true;
             }
             line = reader.readLine();
         }
+        return false;
+    }
+
+    public void close() throws IOException {
         reader.close();
-        return flag;
+        writer.close();
     }
 }
