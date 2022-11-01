@@ -14,7 +14,7 @@ public class CustomerController {
     CustomerStorage customerStorage = new CustomerStorage();
     Scanner scanner = new Scanner(System.in);
 
-    void customerMenu(String username) {
+    void customerMenu(String username) {                //Customer 
         short productId;
         short choice;
 

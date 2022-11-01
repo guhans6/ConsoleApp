@@ -17,8 +17,8 @@ public class FileStorage {
     private File sellers = new File("Files/sellers.txt");
     private File admins = new File("Files/admins.txt");
     private File products = new File("Files/products.txt");
-    BufferedReader reader;
-    BufferedWriter writer;
+    private BufferedReader reader;
+    private BufferedWriter writer;
 
     
     //method to add user to the file according to the type

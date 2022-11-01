@@ -16,7 +16,7 @@ public class UserController {
     SellerController sellerController = new SellerController();
     AdminController adminController = new AdminController();
 
-    public void userMenu() {
+    public void userMenu() {                    //Main menu of the application
         short input=0;
         boolean b=true;
         while(b)
@@ -33,6 +33,7 @@ public class UserController {
                         break;
                     case 3:
                         b = false;
+                        close();
                         System.out.println("Bye!");
                         System.exit(0);
                         break;
@@ -43,11 +44,13 @@ public class UserController {
                 System.out.println("Enter correct input!");
                 // e.printStackTrace();
                 scanner.nextLine();
+            } catch(IOException e) {
+                System.out.println("Error Occured!");
             }
         }
     }
 
-    private void userLogin() {
+    private void userLogin() {                  //Login portal for all users
         short userType = userType();
         String userName;
         String password;
@@ -88,12 +91,12 @@ public class UserController {
         } else if(userType == 2) {
             sellerController.registerSeller(userType);
         } else if(userType == 3) {
-            System.out.println("Admin can't be registered!");
+            System.out.println("Admin can't be registered!"); 
         }
         return;
     }
 
-
+    //To get the type of user who is trying to login or register
     private short userType() throws InputMismatchException {
         short userType;
 
@@ -108,9 +111,9 @@ public class UserController {
         return userType;
     }
 
-    // private void close() throws IOException {
-    //     customerController.close();
-    //     sellerController.close();
-    //     adminController.close(); 
-    // }
+    private void close() throws IOException {
+        customerController.close();
+        sellerController.close();
+        adminController.close(); 
+    }
 }
