@@ -1,4 +1,4 @@
-package storage;
+package storage.fileStorage;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -7,22 +7,21 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import models.user.User;
-import ui.ProductView;
 
 public class FileStorage {
 
     private File customers = new File("Files/customers.txt");
     private File sellers = new File("Files/sellers.txt");
-    private File admins = new File("Files/admins.txt");
     private File products = new File("Files/products.txt");
     private BufferedReader reader;
-    private BufferedWriter writer;
 
     
     //method to add user to the file according to the type
-    public void addUser(User user, short userType) {
+    public boolean addUser(User user, short userType) {
+        BufferedWriter writer = null;
         try {
             File file = getFileByType(userType);
 
@@ -30,16 +29,17 @@ public class FileStorage {
                 writer = new BufferedWriter(new FileWriter(file, true));
                 writer.write(user.toString());
                 writer.newLine();
-                writer.flush();
-                System.out.println("Registered Successfully!");
+                writer.close();;
+                return true;
             }
         } catch (IOException e) {
             System.out.println("Error while adding user. Please try again.");
         }
+        return false;
     }
 
     //check if user exists by username,email,number
-    public boolean checkUserExists(User user,File file) throws IOException {
+    private boolean checkUserExists(User user,File file) throws IOException {
         String split[];
         reader = new BufferedReader(new FileReader(file));
         String line = reader.readLine();
@@ -47,20 +47,16 @@ public class FileStorage {
         while(line != null) {
 
             split = line.split("\\|");
-            if(split[1].equals(user.getUserName())) {
-                System.out.println("Username already exists.");
+            if(split[1].equals(user.getUserName()) || split[3].equals(user.getEmail())) {
                 return true;
             }
-            else if(split[3].equals(user.getEmail())) {
-                System.out.println("Email already assoicated with another account.");
-                return true;
-            }
+
             line = reader.readLine();
         }
         return false; 
     }
 
-    public short checkUser(String username, String password, short userType) throws IOException {
+    public short authenticateUser(String username, String password, short userType) throws IOException {
         File file = getFileByType(userType);
         String line;
         String[] split;
@@ -70,16 +66,15 @@ public class FileStorage {
         while(line != null) {
             split = line.split("\\|");
             if(split[1].equals(username) && split[2].equals(password)) {
-                System.out.println("Login successful!");
                 return userType;
             }
             line = reader.readLine();
         }
-        System.out.println("Invalid username or password.");
         return -1;
     }
 
-    public void deatiledProductView(String productType) throws IOException {
+    public ArrayList<String> getProducList(String productType) throws IOException {
+        ArrayList<String> productList = new ArrayList<>();
         boolean flag = false;
         reader = new BufferedReader(new FileReader(products));
         String line = reader.readLine();
@@ -88,44 +83,25 @@ public class FileStorage {
 
             String[] split = line.split("\\|");
             if(split[6].equals(productType)) {
-                ProductView.displayProductDetails(split);
+                productList.add(line);
                 flag = true;
             }
             line = reader.readLine();
         }
         if(!flag) {
-            System.out.println("No products found.");
+            return null;
         }
+        return productList;
     }
 
-    public void getProducts(String sellerName) throws IOException {
-        reader = new BufferedReader(new FileReader(products));
-        String line = reader.readLine();
-        boolean flag = false;
+    
 
-        while(line != null) {
-
-            String[] split = line.split("\\|");
-            if(split[0].equals(sellerName )) {
-                ProductView.displayProductDetails(split);
-                flag = true;
-            }
-            line = reader.readLine();
-        }
-        if(!flag) {
-            System.out.println("No products found.");
-        }
-    }
-
-    File getFileByType(short userType) throws FileNotFoundException {
+    protected File getFileByType(short userType) throws FileNotFoundException {
         if(userType == 1) {
             return customers;
         }
         else if(userType == 2) {
             return sellers;
-        }
-        else if(userType == 3) {
-            return admins;
         }
         else {
             System.out.println("Wrong user type.");
@@ -145,37 +121,15 @@ public class FileStorage {
             }
         line = reader.readLine();
         }
-    System.out.println("Enter Correct ID!");
+    // System.out.println("Enter Correct ID!");
     return null;
     }
 
     //add stoock array and return it
-    public  String getStockString(String[] split) {
+    protected String getStockString(String[] split) {
         String stock = "";
         stock +=split[5] + "|" + split[6] + "|" + split[7] + "|" + split[8] + "|" + split[9] + "|" + split[10] + "|" 
                  + split[11] + "|" + split[12] + "|" + split[13] + "|" + split[14] + "|" + split[15] + "|" + split[16];
         return stock;
-    }
-
-    public boolean checkUserProduct(String username, int productId) throws FileNotFoundException, IOException {
-        //check seller is associated with the product or not
-        reader = new BufferedReader(new FileReader(products));
-        String line = reader.readLine();
-        String id = String.valueOf(productId);
-
-        while(line != null) {
-
-            String[] split = line.split("\\|");
-            if(split[0].equals(username) && split[1].equals(id) || username.equals("Admin")) {
-                return true;
-            }
-            line = reader.readLine();
-        }
-        return false;
-    }
-
-    public void close() throws IOException {
-        reader.close();
-        writer.close();
     }
 }

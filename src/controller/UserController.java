@@ -4,19 +4,19 @@ import java.io.IOException;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
-import storage.FileStorage;
+import storage.fileStorage.FileStorage;
 import ui.DisplayMenu;
 
 public class UserController {
 
-    Scanner scanner = new Scanner(System.in);
-    FileStorage fileStorage = new FileStorage();
-    DisplayMenu displayMenu = DisplayMenu.getInstance();
-    CustomerController customerController = new CustomerController();
-    SellerController sellerController = new SellerController();
-    AdminController adminController = new AdminController();
+    private Scanner scanner = new Scanner(System.in);
+    private FileStorage fileStorage = new FileStorage();
+    private DisplayMenu displayMenu = DisplayMenu.getInstance();
+    private CustomerController customerController = new CustomerController();
+    private SellerController sellerController = new SellerController();
+    private AdminController adminController = new AdminController();
 
-    public void userMenu() {                    //Main menu of the application
+    public void mainMenu() {                    //Main menu of the application
         short input=0;
         boolean b=true;
         while(b)
@@ -33,7 +33,6 @@ public class UserController {
                         break;
                     case 3:
                         b = false;
-                        close();
                         System.out.println("Bye!");
                         System.exit(0);
                         break;
@@ -44,8 +43,9 @@ public class UserController {
                 System.out.println("Enter correct input!");
                 // e.printStackTrace();
                 scanner.nextLine();
-            } catch(IOException e) {
+            } catch(Exception e) {
                 System.out.println("Error Occured!");
+                e.printStackTrace();
             }
         }
     }
@@ -61,21 +61,22 @@ public class UserController {
             System.out.print("Enter password: ");
             password = scanner.next();
             int checker;
-                checker = fileStorage.checkUser(userName, password, userType);
-                switch(checker) {
-                    case 1:
-                        customerController.customerMenu(userName);
-                        break;
-                    case 2:
-                        sellerController.sellerMenu(userName);
-                        break;
-                    case 3:
-                        adminController.adminMenu(userName);
-                        break;
-                    case -1:
-                        System.out.println("Login Failed!");
-                        break;
-                }
+            
+            checker = fileStorage.authenticateUser(userName, password, userType);
+            switch(checker) {
+                case 1:
+                    customerController.customerMenu(userName);
+                    break;
+                case 2:
+                    sellerController.sellerMenu(userName);
+                    break;
+                case 3:
+                    adminController.adminMenu(userName);
+                    break;
+                case -1:
+                    System.out.println("Invalid username or password.");
+                    break;
+            }
         } catch (IOException e) {
             System.out.println("Error occured! Try again!");
             // e.printStackTrace();
@@ -83,7 +84,7 @@ public class UserController {
         
     }
 
-    private void registerUser() {
+    private void registerUser() throws InputMismatchException, Exception {
         short userType = userType();
 
         if(userType == 1) {
@@ -103,17 +104,11 @@ public class UserController {
         displayMenu.displayUsertypeMenu();
         userType = scanner.nextShort();
         if(userType == 4) {
-            userMenu(); 
+            mainMenu();
         } else if(userType < 1 || userType > 3) {
             System.out.println("Enter from given options!");
-            userMenu();
+            mainMenu();
         }
         return userType;
-    }
-
-    private void close() throws IOException {
-        customerController.close();
-        sellerController.close();
-        adminController.close(); 
     }
 }

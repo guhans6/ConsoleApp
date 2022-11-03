@@ -36,10 +36,11 @@ public class DisplayMenu {
     public void displayCustomerMenu() {
         System.out.println("\n1. View Products");
         System.out.println("2. Add Products To Cart");
-        System.out.println("3. Buy Products in the cart");
-        System.out.println("4. View Orders");
-        System.out.println("5. Logout");
-        System.out.println("6. Exit");
+        System.out.println("3. Remove Products From Cart");
+        System.out.println("4. Buy Products in the cart");
+        System.out.println("5. View Orders");
+        System.out.println("6. Logout");
+        System.out.println("7. Exit");
     }
 
 

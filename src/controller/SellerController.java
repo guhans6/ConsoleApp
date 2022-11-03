@@ -1,19 +1,25 @@
 package controller;
 
 import java.io.IOException;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
 import models.user.Seller;
-import storage.SellerStorage;
+import storage.fileStorage.FileStorage;
+import storage.fileStorage.SellerStorage;
 import ui.DisplayMenu;
+import ui.ProductView;
 
 public class SellerController {
 
-    DisplayMenu displayMenu = DisplayMenu.getInstance();
-    Scanner scanner = new Scanner(System.in);
-    ProductController productController = new ProductController();
-    SellerStorage sellerStorage = new SellerStorage();
+    private DisplayMenu displayMenu = DisplayMenu.getInstance();
+    private Scanner scanner = new Scanner(System.in);
+    private ProductController productController;
+    private SellerStorage sellerStorage = new SellerStorage();
+    private FileStorage fileStorage = new FileStorage();
+    // private UserStorage userStorage = new UserStorage();
 
     void sellerMenu(String username){
         short choice;
@@ -28,7 +34,7 @@ public class SellerController {
                         addProduct(username);
                         break;
                     case 2:
-                        sellerStorage.getProducts(username);
+                        displaySellerProducts(username);
                         break;
                     case 3:
                         updateStock(username);
@@ -56,6 +62,11 @@ public class SellerController {
         }
     }
 
+    private void displaySellerProducts(String username) throws IOException {
+        ArrayList<String> sellerProducts =  sellerStorage.getProducts(username);
+        ProductView.getInstance().displayProductDetails(sellerProducts,2);
+    }
+
     private void addProduct(String username) throws InputMismatchException, IOException {
         String type = displayMenu.getProductType();
 
@@ -78,8 +89,9 @@ public class SellerController {
         productId = scanner.nextShort();
         System.out.println("Enter quantity to add: ");
         quantity = scanner.nextShort();
-        if(checkUserProductAssociated(username, productId)) {
+        if(sellerStorage.checkUserProductAssociated(username, productId)) {
             sellerStorage.addStock(productId, quantity);
+            System.out.println("Stock updated Successfully!");
         }
     }
 
@@ -88,23 +100,13 @@ public class SellerController {
         int id = scanner.nextInt();
         scanner.nextLine();
 
-        if(checkUserProductAssociated(username, id)) {
+        if(sellerStorage.checkUserProductAssociated(username, id)) {
             sellerStorage.deleteProduct(id);
         }
     }
 
-    private boolean checkUserProductAssociated(String username, int id) throws IOException {
-
-        if(sellerStorage.checkUserProduct(username, id)) {
-            return true;
-        } else {
-            System.out.println("You are not associated with this product.");
-            return false;
-        }
-    }
-
      //seller registration get input from user
-     public void registerSeller(short userType) throws InputMismatchException {
+     public void registerSeller(short userType) throws InputMismatchException, SQLException {
         System.out.println("Welcome! Enter the following details ");
         Seller seller = new Seller();
 
@@ -123,12 +125,11 @@ public class SellerController {
             System.out.println("Please fill all the fields!");
             return;
         } 
-        sellerStorage.addUser(seller, userType);
+        if(fileStorage.addUser(seller, userType)) {
+            System.out.println("Registration successful!");
+        } else {
+            System.out.println("Username or email already exists!");
+        }
     }
-    
-    public void close() throws IOException {
-        sellerStorage.close();
-        productController.close();
-        scanner.close();
-    }
+
 }

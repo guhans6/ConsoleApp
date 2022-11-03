@@ -6,15 +6,15 @@ import java.util.Scanner;
 
 import models.product.Laptop;
 import models.product.Mobile;
-import storage.SellerStorage;
+import storage.fileStorage.SellerStorage;
 
 public class ProductController {
 
-    SellerStorage sellerStorage = new SellerStorage();
-    Scanner scanner = new Scanner(System.in);
+    private SellerStorage sellerStorage = new SellerStorage();
+    private Scanner scanner = new Scanner(System.in);
 
      //add laptop
-     void addLaptop(String username) throws IOException,InputMismatchException {
+    void addLaptop(String username) throws IOException,InputMismatchException {
         Laptop laptop = new Laptop();
 
         System.out.println("Enter Laptop Brand: ");
@@ -50,6 +50,7 @@ public class ProductController {
         laptop.setProductDescription(scanner.nextLine());
 
         sellerStorage.addProduct(username, laptop);
+        System.out.println("Product added successfully.");
     }
 
     //add mobile
@@ -87,6 +88,7 @@ public class ProductController {
         mobile.setProductDescription(scanner.nextLine());
 
         sellerStorage.addProduct(username, mobile);
+        System.out.println("Product added successfully.");
     }
 
     //close scanner
