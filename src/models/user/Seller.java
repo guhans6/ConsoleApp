@@ -1,8 +1,7 @@
 package models.user;
 
-public class Seller implements User{
+public class Seller implements User {
 
-    //create variables and methods that implements user
     private String sellerName;
     private String sellerUserName;
     private String sellerEmail;

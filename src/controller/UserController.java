@@ -1,9 +1,10 @@
 package controller;
 
-import java.io.IOException;
+import java.sql.SQLException;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
+import storage.database.UserDbStorage;
 import storage.fileStorage.FileStorage;
 import ui.DisplayMenu;
 
@@ -15,6 +16,7 @@ public class UserController {
     private CustomerController customerController = new CustomerController();
     private SellerController sellerController = new SellerController();
     private AdminController adminController = new AdminController();
+    private UserDbStorage userStorage = new UserDbStorage();
 
     public void mainMenu() {                    //Main menu of the application
         short input=0;
@@ -62,7 +64,7 @@ public class UserController {
             password = scanner.next();
             int checker;
             
-            checker = fileStorage.authenticateUser(userName, password, userType);
+            checker = userStorage.authenticateUser(userName, password, userType);
             switch(checker) {
                 case 1:
                     customerController.customerMenu(userName);
@@ -77,7 +79,7 @@ public class UserController {
                     System.out.println("Invalid username or password.");
                     break;
             }
-        } catch (IOException e) {
+        } catch (SQLException e) {
             System.out.println("Error occured! Try again!");
             // e.printStackTrace();
         }

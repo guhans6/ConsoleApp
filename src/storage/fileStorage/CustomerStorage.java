@@ -9,17 +9,13 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Scanner;
-
 
 public class CustomerStorage extends FileStorage {
-
-    Scanner scanner = new Scanner(System.in);
+    
     private File orders = new File("Files/orders.txt");
     private File cart = new File("Files/cart.txt");
     private File products = new File("Files/products.txt");
     private File tempFile = new File("Files/temp.txt");
-    ArrayList<String> producList;
     private BufferedReader reader;
     private BufferedWriter writer;
 
@@ -170,7 +166,7 @@ public class CustomerStorage extends FileStorage {
     public boolean removeProductFromCart(String username, int id) throws IOException {
         reader = new BufferedReader(new FileReader(cart));
         writer = new BufferedWriter(new FileWriter(tempFile));
-        boolean found = false;
+        boolean isProductRemoved = false;
         tempFile.createNewFile();
         String line = reader.readLine();
         while(line != null) {
@@ -178,7 +174,7 @@ public class CustomerStorage extends FileStorage {
             String[] split = line.split("\\|");
             if(split[0].equals(username) && split[1].equals(id + "")) {
                 line = reader.readLine();
-                found = true;
+                isProductRemoved = true;
                 continue;
             }
             writer.write(line);
@@ -188,13 +184,7 @@ public class CustomerStorage extends FileStorage {
         writer.close();;
         cart.delete();
         tempFile.renameTo(cart);
-        return found;
-    }
-
-    public void close() throws IOException {                //close all the objects
-        if(reader != null) {
-            reader.close();
-        } 
+        return isProductRemoved;
     }
 
 }

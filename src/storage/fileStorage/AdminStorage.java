@@ -74,9 +74,4 @@ public class AdminStorage extends FileStorage {
         }
         return null;
     }
-
-    //close all objects
-    public void close() throws IOException {
-        reader.close();
-    }
 }

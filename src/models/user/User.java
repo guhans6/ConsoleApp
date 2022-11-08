@@ -2,7 +2,7 @@ package models.user;
 
 public interface User {
     
-    //methods that contains for all users customers and sellers
+    // methods that contains for all users customers and sellers
     public void setName(String name);
     public String getName();
     public void setUserName(String userName);
@@ -11,6 +11,7 @@ public interface User {
     public String getEmail();
     public void setPassword(String password);
     public String getPassword();
-    public void setAddress(String address);
-    public String getAddress();
+    public abstract void setAddress(String address);
+    public abstract String getAddress();
+    
 }

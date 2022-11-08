@@ -89,9 +89,4 @@ public class AdminController {
             System.out.println("User not found!");
         }
     }
-
-    public void close() throws IOException {
-        adminStorage.close();
-        scanner.close();
-    }
 }

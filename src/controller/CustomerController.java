@@ -6,6 +6,7 @@ import java.util.InputMismatchException;
 import java.util.Scanner;
 
 import models.user.Customer;
+import storage.database.UserDbStorage;
 import storage.fileStorage.*;
 import storage.fileStorage.CustomerStorage;
 import ui.*;
@@ -17,9 +18,9 @@ public class CustomerController {
     private FileStorage fileStorage = new FileStorage();
     private Scanner scanner = new Scanner(System.in);
     private ProductView productView = ProductView.getInstance();
-    // private UserStorage userStorage = new UserStorage();
+    private UserDbStorage userStorage = new UserDbStorage();
 
-    void customerMenu(String username) {                //Customer 
+    void customerMenu(String username) {                //Customer menu 
         short choice;
         System.out.println("Login successful!");
         System.out.println("Welcome " + username);
@@ -37,7 +38,8 @@ public class CustomerController {
                         addProductToCart(username);
                         break;
                     case 3:
-                        removeCartProduct(username);
+                        removeCartProducts(username);
+                        break;
                     case 4:
                         buyProductInCart(username);
                         break;
@@ -84,7 +86,7 @@ public class CustomerController {
             System.out.println("All fields are mandatory!");
             return;
         }
-        if(fileStorage.addUser(customer, userType)) {
+        if(userStorage.addUser(customer, userType)) {
             System.out.println("Registered successfully!");
         } else {
             System.out.println("Username or email already exists!");
@@ -122,10 +124,11 @@ public class CustomerController {
         }
     }
 
-    private void removeCartProduct(String username) throws InputMismatchException, IOException {
+    private void removeCartProducts(String username) throws InputMismatchException, IOException {
         int productId;
         System.out.println("Enter product id to remove from cart: ");
         productId = scanner.nextShort();
+        scanner.nextLine();
         if(customerStorage.removeProductFromCart(username, productId)) {
             System.out.println("Product removed from cart successfully.");
         } else {
@@ -161,7 +164,7 @@ public class CustomerController {
                 System.out.println("Come back later.");
             } else {
                 System.out.println("Enter correct choice! (y/n)");
-        }
+            }
         }
     }
 
@@ -179,11 +182,6 @@ public class CustomerController {
         }
 
 
-    }
-
-    void close() throws IOException {   //close the scanner
-        customerStorage.close();
-        scanner.close();
     }
     
 }

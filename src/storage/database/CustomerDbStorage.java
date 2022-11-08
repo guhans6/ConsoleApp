@@ -4,44 +4,24 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import models.user.User;
-
 public class CustomerDbStorage {
 
     Connection databaseConnection = IntiateConnection.getConnection();
     
+    public void addToCart(String username, int id,int quantity) throws SQLException {
+        String query = "INSERT INTO cart (username, product_id, quantity) VALUES (?, ?, ?)";
+        PreparedStatement statement = databaseConnection.prepareStatement(query);
+        statement.setString(1, username);
+        statement.setInt(2, id);
+        statement.setInt(3, quantity);
+        statement.executeUpdate();
+    }
 
-    public boolean addUser(User user, short type) {
-        String userType = findUserByType(type);
-        String query = "INSERT INTO " + userType + " VALUES (?, ?, ?, ?)";
-        try {
-            PreparedStatement statement = databaseConnection.prepareStatement(query);
-            statement.setString(1, user.getUserName());
-            statement.setString(2, user.getName());
-            statement.setString(3, user.getAddress());
-            statement.setString(4, user.getEmail());
-            statement.setString(5, user.getPassword());
-            int result = statement.executeUpdate();
-            if(result == 1) {
-                return true;
-            }
-        } catch (SQLException e) {
-            System.out.println("Error while adding user. Please try again.");
-        }
-        return false;
-    
-}
-
-    private String findUserByType(short type) {
-        String userType = "";
-        switch(type) {
-            case 1:
-                userType = "customers";
-                break;
-            case 2:
-                userType = "sellers";
-                break;
-        }
-        return userType;
+    public void removeProductFromCart(String username, int id) throws SQLException {
+        String query = "DELETE FROM cart WHERE username = ? AND product_id = ?";
+        PreparedStatement statement = databaseConnection.prepareStatement(query);
+        statement.setString(1, username);
+        statement.setInt(2, id);
+        statement.executeUpdate();
     }
 }

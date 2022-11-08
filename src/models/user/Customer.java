@@ -2,7 +2,6 @@ package models.user;
 
 public class Customer implements User {
 
-    //create variables and methods that implements user
     private String customerName;
     private String customerUserName;
     private String customerEmail;

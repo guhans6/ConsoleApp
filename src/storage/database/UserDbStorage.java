@@ -4,10 +4,11 @@ import java.sql.*;
 
 import models.user.User;
 
-public class UserStorage {
+public class UserDbStorage {
 
     Connection databaseConnection = IntiateConnection.getConnection();
-    final String selectCustomer = "SELECT * FROM customers WHERE ";
+    String query;
+    // final String selectCustomer = "SELECT * FROM customers WHERE ";
 
     public boolean addUser(User user,short role) throws SQLException {
         int result;
@@ -15,11 +16,11 @@ public class UserStorage {
         String userRole;
         PreparedStatement statement;
 
-        if(checkUserNameExists(user.getUserName()) || checkEmailExists(user.getEmail())) {
+        userRole = findUserByType(role);
+        if(checkUserNameExists(user.getUserName(), user.getEmail() ,userRole)) {
             System.out.println("Username or Email already exists!");
             return false;
         } 
-        userRole = findUserByType(role);
         query = "INSERT INTO " + userRole + " VALUES (?, ?, ?, ?, ?)";
         statement = databaseConnection.prepareStatement(query);
 
@@ -42,39 +43,37 @@ public class UserStorage {
             case 2:
                 query = "sellers";
                 break;
-            case 3:
-                query = "admins";
-                break;
         }
         return query;
     }
 
-    boolean checkUserNameExists(String username) throws SQLException {
-        String userNameQuery = selectCustomer + " username = ?";
+    boolean checkUserNameExists(String username, String email, String userRole) throws SQLException {
+        String userNameQuery = "SELECT * FROM " + userRole + " WHERE username = ?";
+        String emailQuery = "SELECT * FROM " + userRole + " WHERE email = ?";
         PreparedStatement checkUserStatement = databaseConnection.prepareStatement(userNameQuery);
-        checkUserStatement.setString(1, username);
-        ResultSet userResult = checkUserStatement.executeQuery();
-
-        if(userResult.next()) {
-            return true;
-        }
-        return false;
-    }
-
-    boolean checkEmailExists(String email) throws SQLException {
-        String emailQuery = selectCustomer + " email = ?";
         PreparedStatement checkEmailStatement = databaseConnection.prepareStatement(emailQuery);
+        checkUserStatement.setString(1, username);
         checkEmailStatement.setString(1, email);
+        ResultSet userResult = checkUserStatement.executeQuery();
         ResultSet emailResult = checkEmailStatement.executeQuery();
 
-        if(emailResult.next()) {
+        if(userResult.next() || emailResult.next()) {
             return true;
         }
         return false;
     }
 
-    public short authenticateUser(String username, String password) throws SQLException {
-       return -1;
+    public short authenticateUser(String username, String password, short userType) throws SQLException {
+        query = "SELECT * FROM " + findUserByType(userType) + " WHERE username = ? AND password = ?";
+        PreparedStatement statement = databaseConnection.prepareStatement(query);
+        statement.setString(1, username);
+        statement.setString(2, password);
+        ResultSet result = statement.executeQuery();
+
+        if(result.next()) {
+            return userType;
+        }
+        return -1;
     }
 
     public void closeConnection() throws SQLException {

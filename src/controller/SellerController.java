@@ -7,6 +7,7 @@ import java.util.InputMismatchException;
 import java.util.Scanner;
 
 import models.user.Seller;
+import storage.database.UserDbStorage;
 import storage.fileStorage.FileStorage;
 import storage.fileStorage.SellerStorage;
 import ui.DisplayMenu;
@@ -19,7 +20,7 @@ public class SellerController {
     private ProductController productController;
     private SellerStorage sellerStorage = new SellerStorage();
     private FileStorage fileStorage = new FileStorage();
-    // private UserStorage userStorage = new UserStorage();
+    private UserDbStorage userStorage = new UserDbStorage();
 
     void sellerMenu(String username){
         short choice;
@@ -59,6 +60,33 @@ public class SellerController {
                 // e.printStackTrace();
                 System.out.println("Error occured!");
             }
+        }
+    }
+
+     //seller registration get input from user
+     public void registerSeller(short userType) throws InputMismatchException, SQLException {
+        System.out.println("Welcome! Enter the following details ");
+        Seller seller = new Seller();
+
+        System.out.println("Enter your name:");
+        seller.setName(scanner.nextLine());
+        System.out.println("Enter your username:");
+        seller.setUserName(scanner.nextLine());
+        System.out.println("Enter your email:");
+        seller.setEmail(scanner.nextLine());
+        System.out.println("Enter your password:");
+        seller.setPassword(scanner.nextLine());
+        System.out.println("Enter your office address:");
+        seller.setAddress(scanner.nextLine());
+        if(seller.getName().equals("") || seller.getUserName().equals("") || seller.getEmail().equals("") 
+                || seller.getPassword().equals("") || seller.getAddress().equals("")) {
+            System.out.println("Please fill all the fields!");
+            return;
+        } 
+        if(userStorage.addUser(seller, userType)) {
+            System.out.println("Registration successful!");
+        } else {
+            System.out.println("Username or email already exists!");
         }
     }
 
@@ -102,33 +130,6 @@ public class SellerController {
 
         if(sellerStorage.checkUserProductAssociated(username, id)) {
             sellerStorage.deleteProduct(id);
-        }
-    }
-
-     //seller registration get input from user
-     public void registerSeller(short userType) throws InputMismatchException, SQLException {
-        System.out.println("Welcome! Enter the following details ");
-        Seller seller = new Seller();
-
-        System.out.println("Enter your name:");
-        seller.setName(scanner.nextLine());
-        System.out.println("Enter your username:");
-        seller.setUserName(scanner.nextLine());
-        System.out.println("Enter your email:");
-        seller.setEmail(scanner.nextLine());
-        System.out.println("Enter your password:");
-        seller.setPassword(scanner.nextLine());
-        System.out.println("Enter your office address:");
-        seller.setAddress(scanner.nextLine());
-        if(seller.getName().equals("") || seller.getUserName().equals("") || seller.getEmail().equals("") 
-                || seller.getPassword().equals("") || seller.getAddress().equals("")) {
-            System.out.println("Please fill all the fields!");
-            return;
-        } 
-        if(fileStorage.addUser(seller, userType)) {
-            System.out.println("Registration successful!");
-        } else {
-            System.out.println("Username or email already exists!");
         }
     }
 

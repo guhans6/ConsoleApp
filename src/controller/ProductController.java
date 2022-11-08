@@ -90,10 +90,4 @@ public class ProductController {
         sellerStorage.addProduct(username, mobile);
         System.out.println("Product added successfully.");
     }
-
-    //close scanner
-    void close() {
-        scanner.close();
-    }
-    
 }
