@@ -10,24 +10,26 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import models.product.Product;
+import storage.SellerStorage;
 
-public class SellerStorage extends FileStorage {
+public class SellerFileStorage implements SellerStorage {
 
 
     private File products = new File("Files/products.txt");
     private File tempFile = new File("Files/temp.txt");
     private BufferedReader reader;
 
-    public void addProduct(String username, Product product) throws IOException {
+    public boolean saveProduct(String username, Product product) throws IOException {
         BufferedWriter writer = new BufferedWriter(new FileWriter(products, true));
         double discount = product.getPrice() * (product.getProductDiscount() / 100);
         double discountedPrice = product.getPrice() - discount;
 
         product.setProductID(getAvailavleID());
         product.setProductDiscountedPrice(discountedPrice);
-        writer.write(username + "|" + product);
+        writer.write(product + "|" + username);
         writer.newLine();
-        writer.close();;
+        writer.close();
+        return true;
     }
     
     //read products file and get the last id and add 1 to it
@@ -37,32 +39,28 @@ public class SellerStorage extends FileStorage {
 
         String line = reader.readLine();
         while(line != null) {
-
             String[] split = line.split("\\|");
-            id = Integer.parseInt(split[1]);
+            if(split.length > 1) {
+                id = Integer.parseInt(split[0]);
+            }
             line = reader.readLine();
         }
         return ++id;
     }
 
-    public ArrayList<String> getProducts(String sellerName) throws IOException {
+    public ArrayList<String> getSellerProducts(String sellerName) throws IOException {
         ArrayList<String> productsList = new ArrayList<>();
         String[] split;
         reader = new BufferedReader(new FileReader(products));
         String line = reader.readLine();
-        boolean flag = false;
 
         while(line != null) {
 
             split = line.split("\\|");
-            if(split[0].equals(sellerName )) {
+            if(split[20].equals(sellerName)) {
                 productsList.add(line);
-                flag = true;
             }
             line = reader.readLine();
-        }
-        if(!flag) {
-            return null;
         }
         return productsList;
     }
@@ -76,7 +74,7 @@ public class SellerStorage extends FileStorage {
         while(line != null) {
 
             String[] split = line.split("\\|");
-            if(Integer.parseInt(split[1]) == id) {
+            if(Integer.parseInt(split[0]) == id) {
                 line = reader.readLine();
                 continue;
             }
@@ -90,7 +88,7 @@ public class SellerStorage extends FileStorage {
         System.out.println("Product deleted successfully.");
     }
 
-    public boolean checkUserProductAssociated(String username, int productId) throws FileNotFoundException, IOException {
+    public boolean checkUserProductAssociated(String sellerUsername, int productId) throws FileNotFoundException, IOException {
         reader = new BufferedReader(new FileReader(products));
         String line = reader.readLine();
         String id = String.valueOf(productId);
@@ -98,7 +96,7 @@ public class SellerStorage extends FileStorage {
         while(line != null) {
 
             String[] split = line.split("\\|");
-            if(split[0].equals(username) && split[1].equals(id) || username.equals("Admin")) {
+            if(split[19].equals(sellerUsername) && split[0].equals(id) || sellerUsername.equals("Admin")) {
                 return true;
             }
             line = reader.readLine();
@@ -107,7 +105,7 @@ public class SellerStorage extends FileStorage {
     }
 
     //add stock to the product
-    public void addStock(int id, int stock) throws IOException {
+    public void saveStock(int id, int stock) throws IOException {
         reader = new BufferedReader(new FileReader(products));
         BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile));
         String stockString;
@@ -117,9 +115,9 @@ public class SellerStorage extends FileStorage {
         while(line != null) {
 
             String[] split = line.split("\\|");
-            if(Integer.parseInt(split[1]) == id) {
+            if(Integer.parseInt(split[0]) == id) {
                 int currentStock = Integer.parseInt(split[4]);
-                stockString = getStockString(split);
+                stockString = UserFileStorage.getStockString(split);
 
                 currentStock = stock;
                 line = split[0] + "|" + split[1] + "|" + split[2] + "|" + split[3] + "|" + currentStock + "|" + stockString;

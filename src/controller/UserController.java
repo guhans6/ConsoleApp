@@ -1,22 +1,21 @@
 package controller;
 
-import java.sql.SQLException;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
+import storage.UserStorage;
 import storage.database.UserDbStorage;
-import storage.fileStorage.FileStorage;
+import storage.fileStorage.UserFileStorage;
 import ui.DisplayMenu;
 
 public class UserController {
 
     private Scanner scanner = new Scanner(System.in);
-    private FileStorage fileStorage = new FileStorage();
+    private UserStorage fileStorage = new UserDbStorage();
     private DisplayMenu displayMenu = DisplayMenu.getInstance();
     private CustomerController customerController = new CustomerController();
     private SellerController sellerController = new SellerController();
-    private AdminController adminController = new AdminController();
-    private UserDbStorage userStorage = new UserDbStorage();
+    // private UserDbStorage userStorage = new UserDbStorage();
 
     public void mainMenu() {                    //Main menu of the application
         short input=0;
@@ -64,7 +63,7 @@ public class UserController {
             password = scanner.next();
             int checker;
             
-            checker = userStorage.authenticateUser(userName, password, userType);
+            checker = fileStorage.authenticateUser(userName, password, userType);
             switch(checker) {
                 case 1:
                     customerController.customerMenu(userName);
@@ -73,16 +72,17 @@ public class UserController {
                     sellerController.sellerMenu(userName);
                     break;
                 case 3:
-                    adminController.adminMenu(userName);
+                    new AdminController().adminMenu(userName);
                     break;
                 case -1:
                     System.out.println("Invalid username or password.");
                     break;
             }
-        } catch (SQLException e) {
-            System.out.println("Error occured! Try again!");
-            // e.printStackTrace();
+        } catch(Exception e) {
+            System.out.println("Error Occured!");
+            e.printStackTrace();
         }
+
         
     }
 

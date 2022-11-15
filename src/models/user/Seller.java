@@ -2,6 +2,7 @@ package models.user;
 
 public class Seller implements User {
 
+    
     private String sellerName;
     private String sellerUserName;
     private String sellerEmail;

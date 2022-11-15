@@ -1,3 +1,2 @@
-a|1|Xp|45000.0|7|Back To School Laptop!|Laptop|5.0|42750.0|Dell|Black|8|512|8 hours|15.6|i7|Windows 11
-naveen|2|Neo|15000.0|3|Stylish and LightWeight!|Mobile|10.0|13500.0|Realme|Green|8|128|24 hours|null|5.6|Snapdragon 755
-guhan|3|Nitro|60000.0|3|Budget Gaming Laptop!|Laptop|10.0|54000.0|Acer|Grey|8|512|6 Hours|15.6|i7|Windows 11
+1|Dell|XP|45000.0|4|Stylish!|3.0|43650.0|Laptop|Dell|Grey|8 Gb|512 GB|8 Hours|null|15.6|i7|Windows 11|1 Year|Fast Charging,4 Ports,|naveen|
+2|Acer|Nitro|50000.0|3|Best for Gaming!|5.0|47500.0|Laptop|Acer|Black|8 GB|512 GB SSD|8 Hours|null|15.6 |i5 11th Gen|Windows 11|1 Year|Faster Gaming than ever!,Backlight LED.,|naveen|

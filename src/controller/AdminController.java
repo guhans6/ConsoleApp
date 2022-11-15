@@ -1,19 +1,22 @@
 package controller;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
-import storage.fileStorage.AdminStorage;
+import storage.AdminStorage;
+import storage.UserStorage;
+import storage.database.AdminDbStorage;
+import storage.database.UserDbStorage;
+import ui.AdminDisplay;
 import ui.DisplayMenu;
 import ui.ProductView;
 
 public class AdminController {
 
-    private AdminStorage adminStorage = new AdminStorage();
     private DisplayMenu displayMenu = DisplayMenu.getInstance();
-    private SellerController sellerController = new SellerController();
+    private AdminStorage adminStorage = new AdminDbStorage();
+    private UserStorage userStorage = new UserDbStorage();
     private Scanner scanner = new Scanner(System.in);
 
      void adminMenu(String username) {
@@ -28,13 +31,13 @@ public class AdminController {
                         displayProducts();
                         break;
                     case 2:
-                        displayAllUsers(1);
-                        break;
-                    case 3:
                         displayAllUsers(2);
                         break;
+                    case 3:
+                        displayAllUsers(1);
+                        break;
                     case 4:
-                        sellerController.deleteProduct("Admin"); //verification password
+                        new SellerController().deleteProduct("Admin"); //verification password
                         break;
                     case 5:
                         deleteUser();
@@ -51,31 +54,29 @@ public class AdminController {
                 System.out.println("Enter from given options!");
                 // e.printStackTrace();
                 scanner.nextLine();
-            } catch (IOException e) {
-                // e.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
                 System.out.println("Error occured!");
             }
         }
     }
 
-    private void displayAllUsers(int userType) throws IOException {
+    private void displayAllUsers(int userType) throws Exception {
         ArrayList<String[]> users = adminStorage.getAllUsers(userType);
-        for(String[] user: users) {
-            System.out.println("Username: " + user[1] + " Email: " + user[3]);
-        }
+        AdminDisplay.getInstance().displaySellers(users);
     }
 
-    private void displayProducts() throws InputMismatchException, IOException {
-        ArrayList<String> productList = adminStorage.getProducList(displayMenu.getProductType());
-        if(productList.size() == 0) {
+    private void displayProducts() throws InputMismatchException, Exception {
+        ArrayList<String> productList = userStorage.getProducList(displayMenu.getProductType());
+        if(productList.isEmpty()) {
             System.out.println("No products available!");
             return;
         }
-        ProductView.getInstance().displayProductDetails(productList,2);
+        ProductView.getInstance().displayProductDetails(productList,1);
 
     }
 
-    private void deleteUser() throws IOException {
+    private void deleteUser() throws Exception {
         System.out.println("Enter username to delete: ");
         scanner.nextLine();
         String usernameToDelete = scanner.nextLine();

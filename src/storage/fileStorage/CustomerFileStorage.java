@@ -10,12 +10,17 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
-public class CustomerStorage extends FileStorage {
+import storage.CustomerStorage;
+import storage.UserStorage;
+import storage.database.UserDbStorage;
+
+public class CustomerFileStorage implements CustomerStorage {
     
     private File orders = new File("Files/orders.txt");
     private File cart = new File("Files/cart.txt");
     private File products = new File("Files/products.txt");
     private File tempFile = new File("Files/temp.txt");
+    UserStorage fileStorage = new UserDbStorage();
     private BufferedReader reader;
     private BufferedWriter writer;
 
@@ -35,9 +40,8 @@ public class CustomerStorage extends FileStorage {
         return producList;
     }
     
-    public ArrayList<String[]> getCustomerOrders(String username) throws IOException {
+    public ArrayList<String[]> getOrders(String username) throws IOException {
         ArrayList<String[]> orderList = new ArrayList<>();
-        boolean found = false;
         BufferedReader reader = new BufferedReader(new FileReader(orders));
         String line = reader.readLine();
 
@@ -46,25 +50,36 @@ public class CustomerStorage extends FileStorage {
             String[] split = line.split("\\|");
             if(split[0].equals(username)) {
                 orderList.add(split);
-                found = true;
             }
             line = reader.readLine();
         }
         reader.close();
-        if(!found) {
-            return null;
-        }
         return orderList;
     }
 
-    public void addToCart(String username, int id,int quantity) throws IOException {
-        String[] product = findProdcutByID(id + "");
-         
-        writer = new BufferedWriter(new FileWriter(cart, true)); //add product and usernmae in cart file
-        writer.write(username + "|" + id + "|" + quantity + "|" + product[8]);
+    public void addToCart(String username, int id,int quantity) throws Exception {
+        BufferedReader reader = new BufferedReader(new FileReader(cart));
+        String line = reader.readLine();
+        int newQuantity = quantity;
+        String[] product;
+        while(line != null) {
+            String[] split = line.split("\\|");
+            if(id == Integer.parseInt(split[1]) && username.equals(split[0])){
+                newQuantity = Integer.parseInt(split[2]) + quantity;
+                removeProductFromCart(username, id);
+                break;
+            }
+            System.out.println("aa");
+            line = reader.readLine();
+        }
+        BufferedWriter writer = new BufferedWriter(new FileWriter(cart, true)); //add product and usernmae in cart file
+        product = fileStorage.findProdcutByID(id + "");
+        writer.write(username + "|" + id + "|" + newQuantity + "|" + product[7]);
         writer.newLine();
         writer.close();;
+        reader.close();
     }
+
 
     //calculate total price of the products in the cart by username and display it if user wants to buy add it to orders file
     public void buyProducts(String username) throws IOException {
@@ -77,8 +92,8 @@ public class CustomerStorage extends FileStorage {
             if(split[0].equals(username)) {
                 addOrder(username, split[1], split[2], split[3]);                //add product to orders file
                 removeStock(split[1], split[2]);                                 //remove stock from products file          
-                clearCart(username);                                             //clear cart
             }   
+            clearCart(username);                                                 //clear cart file
             line = reader.readLine();
         }
         reader.close();
@@ -105,9 +120,9 @@ public class CustomerStorage extends FileStorage {
         while(line != null) {
 
             String[] split = line.split("\\|");
-            if(split[1].equals(id)) {
+            if(split[0].equals(id)) {
                 int stock = Integer.parseInt(split[4]);
-                stockString = getStockString(split);
+                stockString = UserFileStorage.getStockString(split);
                 stock -= Integer.parseInt(quantity);
                 line = split[0] + "|" + split[1] + "|" + split[2] + "|" + split[3] + "|" + stock + "|" + stockString;
             }
@@ -150,7 +165,7 @@ public class CustomerStorage extends FileStorage {
         while(line != null) {
 
             String[] split = line.split("\\|");
-            if(Integer.parseInt(split[1]) == id) {
+            if(Integer.parseInt(split[0]) == id) {
                 if(Integer.parseInt(split[4]) >= quantity) {
                     return 1;
                 } else {

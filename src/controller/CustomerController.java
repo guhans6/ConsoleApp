@@ -1,24 +1,27 @@
 package controller;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
 import models.user.Customer;
+import storage.CustomerStorage;
+import storage.UserStorage;
+import storage.database.CustomerDbStorage;
 import storage.database.UserDbStorage;
-import storage.fileStorage.*;
-import storage.fileStorage.CustomerStorage;
+import storage.fileStorage.CustomerFileStorage;
+import storage.fileStorage.UserFileStorage;
 import ui.*;
 
 public class CustomerController {
 
-    private DisplayMenu displayMenu = DisplayMenu.getInstance();
-    private CustomerStorage customerStorage = new CustomerStorage();
-    private FileStorage fileStorage = new FileStorage();
-    private Scanner scanner = new Scanner(System.in);
+    private CustomerStorage customerStorage = new CustomerDbStorage();
+    // private UserStorage userStorage = new UserFileStorage();
     private ProductView productView = ProductView.getInstance();
-    private UserDbStorage userStorage = new UserDbStorage();
+    private DisplayMenu displayMenu = DisplayMenu.getInstance();
+    private Scanner scanner = new Scanner(System.in);
+    private UserStorage userStorage = new UserDbStorage();
+
 
     void customerMenu(String username) {                //Customer menu 
         short choice;
@@ -59,9 +62,10 @@ public class CustomerController {
             } catch(InputMismatchException e) {
                 System.out.println("Enter Correct Input!");
                 scanner.nextLine();
-            } catch (IOException e) {
+            } catch (Exception e) {
+                e.printStackTrace();
                 System.out.println("Error occured!");
-            } 
+            }
         }
     }
 
@@ -82,7 +86,8 @@ public class CustomerController {
         customer.setAddress(scanner.nextLine());
         
         if(customer.getName().isEmpty() || customer.getUserName().isEmpty() || customer.getPassword().isEmpty() 
-                || customer.getEmail().isEmpty() || customer.getAddress().isEmpty()) {        //check all fields are filled
+                || customer.getEmail().isEmpty() || customer.getAddress().isEmpty() 
+                || customer.getUserName().equals("Admin")) {        //check all fields are filled
             System.out.println("All fields are mandatory!");
             return;
         }
@@ -93,18 +98,17 @@ public class CustomerController {
         }
     }
 
-    private void displayProducts() throws InputMismatchException, IOException {     
-        ArrayList<String> products =  customerStorage.getProducList(displayMenu.getProductType());
+    private void displayProducts() throws InputMismatchException, Exception {     
+        ArrayList<String> products =  userStorage.getProducList(displayMenu.getProductType());
 
-        if(products.size() == 0) {
+        if(products.isEmpty()) {
             System.out.println("No products available!");
             return;
         }
-        productView.displayProductDetails(products,1);
-
+        productView.displayProductDetails(products,2);
     }
 
-    private void addProductToCart(String username) throws InputMismatchException, IOException {
+    private void addProductToCart(String username) throws InputMismatchException, Exception {
         int productId;
         int quantity;
         System.out.println("Enter product id to add in cart: ");
@@ -117,15 +121,20 @@ public class CustomerController {
                 System.out.println("Product added to cart successfully.");
                 break;
             case -1:
-                System.out.println("Product out of stock.");
+                System.out.println("Check available quantity and try again!");
                 break;
             default:
-                System.out.println("Product not found.");
+                System.out.println("Product not found. Enter Correct Id!");
         }
     }
 
-    private void removeCartProducts(String username) throws InputMismatchException, IOException {
+    private void removeCartProducts(String username) throws InputMismatchException, Exception {
+        ArrayList<String[]> cartProducts =  customerStorage.getCart(username);
         int productId;
+        if(cartProducts.isEmpty()) {
+            System.out.println("Cart is Empty");
+            return;
+        }
         System.out.println("Enter product id to remove from cart: ");
         productId = scanner.nextShort();
         scanner.nextLine();
@@ -136,20 +145,26 @@ public class CustomerController {
         }
     }
 
-    private void buyProductInCart(String username) throws IOException {               //buy product from cart
+    private void buyProductInCart(String username) throws Exception {               //buy product from cart
         ArrayList<String[]> cartProducts =  customerStorage.getCart(username);
         String[] product;
         char choice;
         double totalAmount = 0;
         
-        if(cartProducts.size() == 0) {                      //check cart is empty
+        if(cartProducts.isEmpty()) {                      //check cart is empty
             System.out.println("Cart is empty!");
             return;
         }
-        for(String[] userCart : cartProducts) {
-            product = fileStorage.findProdcutByID(userCart[1]);
-            ProductView.getInstance().cartView(product, userCart[2]);
-            totalAmount += (Double.parseDouble(userCart[3]) * Integer.parseInt(userCart[2]));
+        for(String[] cartDetails : cartProducts) {
+            if(customerStorage.checkStock(Integer.parseInt(cartDetails[1]), Integer.parseInt(cartDetails[2])) == 1) {
+                product = userStorage.findProdcutByID(cartDetails[1]);
+                ProductView.getInstance().cartView(product, cartDetails[2]);
+                totalAmount += (Double.parseDouble(cartDetails[3]) * Integer.parseInt(cartDetails[2]));
+            } else {
+                System.out.println("Ordered Quantity is not Available for this Product Id '" + cartDetails[1] + "'");
+                return;
+            }
+
         }
         if(totalAmount > 0.0) {
             System.out.println("Total amount: " + totalAmount);
@@ -168,17 +183,19 @@ public class CustomerController {
         }
     }
 
-    private void orderHistory(String username) throws IOException {
-        ArrayList<String[]> customerOrders =  customerStorage.getCustomerOrders(username);
+    private void orderHistory(String username) throws Exception {
+        ArrayList<String[]> customerOrders =  customerStorage.getOrders(username);
         String[] productDetails;
 
-        if(customerOrders.size() == 0) {
+        if(customerOrders.isEmpty()) {
             System.out.println("No orders placed yet!");
             return;
         }
         for(String[] order : customerOrders) {
-            productDetails = fileStorage.findProdcutByID(order[1]);
-            productView.orderView(productDetails, order[2], order[3], order[4]);
+            productDetails = userStorage.findProdcutByID(order[1]);
+            if(productDetails != null) {
+                ProductView.getInstance().orderView(productDetails, order[2], order[4]);
+            }
         }
 
 

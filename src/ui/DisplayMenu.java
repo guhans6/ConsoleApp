@@ -67,7 +67,8 @@ public class DisplayMenu {
         System.out.println("Enter type of product: \n1. Laptop \n2. Mobile");
         
         try {
-            short choice = scanner.nextShort();
+            int choice = scanner.nextInt();
+            scanner.nextLine();
             switch(choice) {
                 case 1:
                     return "Laptop";

@@ -20,4 +20,8 @@ public class IntiateConnection {
         }
         return connection;
     }
+
+    static String hello() {
+        return "Hello";
+    }
 }
